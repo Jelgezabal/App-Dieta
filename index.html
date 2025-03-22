@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Dieta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        body.dark-mode h1, body.dark-mode h2 {
+            color: #e0e0e0;
+        }
+        .selectors {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #FFD700; /* Amarillo claro para modo claro (sol) */
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .dark-mode .theme-toggle {
+            background-color: #B0BEC5; /* Gris oscuro para modo oscuro (luna) */
+        }
+        .weight-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .weight-inputs div {
+            display: none;
+        }
+        .weight-inputs .visible {
+            display: block;
+        }
+        select, input {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            background-color: white;
+            color: #333;
+        }
+        body.dark-mode select, body.dark-mode input {
+            background-color: #333;
+            color: #e0e0e0;
+            border: 1px solid #555;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        body.dark-mode table {
+            background-color: #2a2a2a;
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        body.dark-mode th, body.dark-mode td {
+            border-bottom: 1px solid #444;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 14px;
+        }
+        body.dark-mode th {
+            background-color: #2E7D32; /* Verde más oscuro en modo oscuro */
+        }
+        td {
+            font-size: 14px;
+        }
+        body.dark-mode td {
+            color: #e0e0e0;
+        }
+        input[type="number"] {
+            width: 60px;
+        }
+        .total {
+            font-weight: bold;
+            background-color: #e0e0e0;
+        }
+        body.dark-mode .total {
+            background-color: #3a3a3a;
+        }
+        .subtotal {
+            font-weight: bold;
+            background-color: #f0f8ff;
+        }
+        body.dark-mode .subtotal {
+            background-color: #3a4a5a;
+        }
+        .section-header {
+            background-color: #d3d3d3;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 10px;
+            text-align: center;
+        }
+        body.dark-mode .section-header {
+            background-color: #444;
+        }
+        .deficit {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #ffeb3b;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+        }
+        body.dark-mode .deficit {
+            background-color: #d4a017;
+            color: #1a1a1a;
+        }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        body.dark-mode .summary {
+            background-color: #2a2a2a;
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+        .summary p {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        body.dark-mode .summary p {
+            color: #e0e0e0;
+        }
+        .summary strong {
+            color: #4CAF50;
+        }
+        body.dark-mode .summary strong {
+            color: #66bb6a;
+        }
+
+        /* Estilos responsivos */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            .selectors, .weight-inputs {
+                flex-direction: column;
+                align-items: center;
+            }
+            select, input {
+                font-size: 14px;
+                padding: 6px;
+            }
+            th, td {
+                padding: 8px;
+                font-size: 12px;
+            }
+            input[type="number"] {
+                width: 50px;
+            }
+            .deficit, .summary p {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            th, td {
+                padding: 6px;
+                font-size: 10px;
+            }
+            input[type="number"] {
+                width: 40px;
+            }
+            .deficit, .summary p {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()"></button>
+
+    <h1>Calculadora de Dieta</h1>
+    <div class="selectors">
+        <div>
+            <label for="user">Usuario: </label>
+            <select id="user" onchange="updateDiet()">
+                <option value="jon">Jon</option>
+                <option value="ainhoa">Ainhoa</option>
+            </select>
+        </div>
+        <div>
+            <label for="day">Día: </label>
+            <select id="day" onchange="updateDiet()">
+                <option value="training">Entrenamiento</option>
+                <option value="rest">Descanso</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="weight-inputs">
+        <div id="jonWeightDiv">
+            <label for="jonWeight">Peso de Jon (kg): </label>
+            <input type="number" id="jonWeight" value="88.7" step="0.1" onchange="updateDiet()">
+        </div>
+        <div id="ainhoaWeightDiv">
+            <label for="ainhoaWeight">Peso de Ainhoa (kg): </label>
+            <input type="number" id="ainhoaWeight" value="58" step="0.1" onchange="updateDiet()">
+        </div>
+    </div>
+
+    <h2>Comidas y Suplementos</h2>
+    <div class="table-container" id="dietTables"></div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="5">Totales Generales</th>
+                </tr>
+                <tr>
+                    <th>Kilocalorías</th>
+                    <th>Proteína</th>
+                    <th>Hidratos</th>
+                    <th>Grasa</th>
+                    <th>Fibra</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="total">
+                    <td id="totalCalories">0</td>
+                    <td id="totalProtein">0</td>
+                    <td id="totalCarbs">0</td>
+                    <td id="totalFat">0</td>
+                    <td id="totalFiber">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="deficit" id="deficitInfo"></div>
+
+    <div class="summary" id="summaryInfo">
+        <p><strong>Kilocalorías:</strong> Representan la energía total que consumes. Mantener un déficit calórico (comer menos de lo que gastas) es clave para perder peso. Tu TDEE varía según el día y el usuario.</p>
+        <p><strong>Proteína:</strong> Esencial para la reparación y crecimiento muscular, especialmente en días de entrenamiento. Apunta a 1.6-2.2 g/kg de peso corporal para preservar músculo en déficit.</p>
+        <p><strong>Hidratos:</strong> Principal fuente de energía, especialmente importante en días de entrenamiento para reponer glucógeno. Incluyen azúcares y fibra; prioriza fuentes con fibra para saciedad.</p>
+        <p><strong>Grasa:</strong> Crucial para la salud hormonal, especialmente en mujeres en perimenopausia. Apunta a 0.8-1 g/kg, con un enfoque en grasas saludables (como aguacate, nueces, aceite de oliva).</p>
+        <p><strong>Fibra:</strong> Ayuda a la saciedad y la salud digestiva. La recomendación es 25-30 g/día para mujeres y 30-38 g/día para hombres. Aumenta la fibra para controlar el hambre en déficit.</p>
+    </div>
+
+    <script>
+        // Datos de alimentos (kcal, proteínas, carbohidratos, grasas, fibra por 100 g)
+        const foods = {
+            "claras_huevo": { kcal: 33, protein: 11, carbs: 0.4, fat: 0, fiber: 0 },
+            "huevo_completo": { kcal: 143, protein: 12.7, carbs: 1.1, fat: 9.5, fiber: 0 },
+            "harina_avena": { kcal: 390, protein: 13, carbs: 68, fat: 7, fiber: 9 },
+            "fresas": { kcal: 32, protein: 0.7, carbs: 7.7, fat: 0.3, fiber: 2 },
+            "aguacate": { kcal: 160, protein: 2, carbs: 8.5, fat: 14.7, fiber: 6.7 },
+            "pollo": { kcal: 165, protein: 31, carbs: 0, fat: 3.5, fiber: 0 },
+            "arroz_blanco": { kcal: 130, protein: 2.7, carbs: 28.1, fat: 0.3, fiber: 0.4 },
+            "aceite_oliva": { kcal: 900, protein: 0, carbs: 0, fat: 100, fiber: 0 },
+            "brócoli": { kcal: 35, protein: 2.5, carbs: 7.1, fat: 0.4, fiber: 3.3 },
+            "whey": { kcal: 370, protein: 90, carbs: 2, fat: 1, fiber: 0 },
+            "salmón": { kcal: 206, protein: 22, carbs: 0, fat: 13, fiber: 0 },
+            "espinacas": { kcal: 23, protein: 2.9, carbs: 3.6, fat: 0.4, fiber: 2.2 },
+            "patata": { kcal: 77, protein: 2.5, carbs: 17, fat: 0.1, fiber: 2.2 },
+            "caseína": { kcal: 360, protein: 80, carbs: 5, fat: 2.5, fiber: 0 },
+            "pan_integral": { kcal: 246, protein: 9, carbs: 42, fat: 3, fiber: 6 },
+            "almendras": { kcal: 600, protein: 21, carbs: 21, fat: 50, fiber: 13 },
+            "nueces": { kcal: 654, protein: 15.2, carbs: 13.7, fat: 65, fiber: 6.7 },
+            "eaa": { kcal: 400, protein: 90, carbs: 0, fat: 0, fiber: 0 },
+            "dextrosa": { kcal: 400, protein: 0, carbs: 100, fat: 0, fiber: 0 },
+            "creatina": { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+        };
+
+        // Dietas (Jon y Ainhoa, días de entrenamiento y descanso)
+        const diets = {
+            jon: {
+                training: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 300 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 20 },
+                    { meal: "Desayuno", food: "fresas", grams: 50 },
+                    { meal: "Desayuno", food: "aguacate", grams: 90 },
+                    { meal: "Desayuno", food: "nueces", grams: 0 },
+                    { meal: "Pre-entreno", food: "eaa", grams: 20 },
+                    { meal: "Pre-entreno", food: "dextrosa", grams: 5 },
+                    { meal: "Intra-entreno", food: "eaa", grams: 20 },
+                    { meal: "Intra-entreno", food: "dextrosa", grams: 20 },
+                    { meal: "Post-entreno", food: "eaa", grams: 10 },
+                    { meal: "Post-entreno", food: "dextrosa", grams: 20 },
+                    { meal: "Comida", food: "pollo", grams: 80 },
+                    { meal: "Comida", food: "arroz_blanco", grams: 80 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 5 },
+                    { meal: "Comida", food: "brócoli", grams: 100 },
+                    { meal: "Merienda", food: "whey", grams: 20 },
+                    { meal: "Merienda", food: "fresas", grams: 50 },
+                    { meal: "Cena", food: "salmón", grams: 80 },
+                    { meal: "Cena", food: "patata", grams: 80 },
+                    { meal: "Cena", food: "espinacas", grams: 100 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 7 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 }
+                ],
+                rest: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 300 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 30 },
+                    { meal: "Desayuno", food: "fresas", grams: 50 },
+                    { meal: "Desayuno", food: "aguacate", grams: 90 },
+                    { meal: "Desayuno", food: "nueces", grams: 0 },
+                    { meal: "Comida", food: "pollo", grams: 60 },
+                    { meal: "Comida", food: "arroz_blanco", grams: 60 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 7 },
+                    { meal: "Comida", food: "brócoli", grams: 100 },
+                    { meal: "Merienda", food: "whey", grams: 20 },
+                    { meal: "Cena", food: "salmón", grams: 80 },
+                    { meal: "Cena", food: "espinacas", grams: 100 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 7 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 }
+                ]
+            },
+            ainhoa: {
+                training: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 100 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 30 },
+                    { meal: "Desayuno", food: "fresas", grams: 50 },
+                    { meal: "Desayuno", food: "aguacate", grams: 25 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Post-entreno", food: "eaa", grams: 20 },
+                    { meal: "Post-entreno", food: "dextrosa", grams: 5 },
+                    { meal: "Post-entreno", food: "creatina", grams: 5 },
+                    { meal: "Comida", food: "pollo", grams: 60 },
+                    { meal: "Comida", food: "arroz_blanco", grams: 80 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 10 },
+                    { meal: "Comida", food: "brócoli", grams: 100 },
+                    { meal: "Merienda", food: "whey", grams: 20 },
+                    { meal: "Merienda", food: "fresas", grams: 50 },
+                    { meal: "Cena", food: "salmón", grams: 80 },
+                    { meal: "Cena", food: "patata", grams: 80 },
+                    { meal: "Cena", food: "espinacas", grams: 100 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 7 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Snack", food: "pan_integral", grams: 0 },
+                    { meal: "Snack", food: "almendras", grams: 0 }
+                ],
+                rest: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 100 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 20 },
+                    { meal: "Desayuno", food: "fresas", grams: 50 },
+                    { meal: "Desayuno", food: "aguacate", grams: 35 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Comida", food: "pollo", grams: 60 },
+                    { meal: "Comida", food: "arroz_blanco", grams: 60 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 7 },
+                    { meal: "Comida", food: "brócoli", grams: 100 },
+                    { meal: "Merienda", food: "whey", grams: 20 },
+                    { meal: "Cena", food: "salmón", grams: 80 },
+                    { meal: "Cena", food: "espinacas", grams: 100 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 7 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Snack", food: "pan_integral", grams: 0 },
+                    { meal: "Snack", food: "almendras", grams: 0 }
+                ]
+            }
+        };
+
+        // Función para calcular el TDEE
+        function calculateTDEE(user, day) {
+            const jonWeight = parseFloat(document.getElementById("jonWeight").value);
+            const ainhoaWeight = parseFloat(document.getElementById("ainhoaWeight").value);
+
+            // Datos fijos: altura (cm), edad (años)
+            const jonHeight = 178; // 1.78 m
+            const ainhoaHeight = 165; // 1.65 m
+            const age = 47; // Ambos tienen 47 años
+
+            // Factores de actividad
+            const activityFactor = day === "training" ? 1.55 : 1.375;
+
+            let bmr;
+            if (user === "jon") {
+                // Harris-Benedict para hombres
+                bmr = 10 * jonWeight + 6.25 * jonHeight - 5 * age + 5;
+            } else {
+                // Harris-Benedict para mujeres
+                bmr = 10 * ainhoaWeight + 6.25 * ainhoaHeight - 5 * age - 161;
+            }
+
+            return Math.round(bmr * activityFactor);
+        }
+
+        // Función para estimar la pérdida de peso
+        function estimateWeightLoss(deficit) {
+            // 7700 kcal = 1 kg de grasa
+            const weeklyDeficit = deficit * 7;
+            const kgPerWeek = weeklyDeficit / 7700;
+            const minLoss = Math.round(kgPerWeek * 0.6 * 1000); // 60% del estimado
+            const maxLoss = Math.round(kgPerWeek * 1000); // 100% del estimado
+            if (deficit <= 0) {
+                return "Sin déficit: No se espera pérdida de peso (puedes ganar peso si hay superávit).";
+            }
+            return `${minLoss}-${maxLoss} gramos por semana`;
+        }
+
+        // Función para capitalizar la primera letra de cada palabra
+        function capitalizeWords(str) {
+            return str.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+        }
+
+        // Función para añadir una fila de subtotal
+        function addSubtotalRow(tbody, sectionName, subtotal) {
+            const row = document.createElement("tr");
+            row.classList.add("subtotal");
+            row.innerHTML = `
+                <td colspan="2">Subtotal ${sectionName}</td>
+                <td>${subtotal.calories.toFixed(1)}</td>
+                <td>${subtotal.protein.toFixed(1)}</td>
+                <td>${subtotal.carbs.toFixed(1)}</td>
+                <td>${subtotal.fat.toFixed(1)}</td>
+                <td>${subtotal.fiber.toFixed(1)}</td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        // Función para crear una tabla para cada sección
+        function createSectionTable(sectionName, items, user, day) {
+            const table = document.createElement("table");
+            const thead = document.createElement("thead");
+            thead.innerHTML = `
+                <tr>
+                    <th colspan="7" class="section-header">${sectionName}</th>
+                </tr>
+                <tr>
+                    <th>Alimento</th>
+                    <th>Cantidad (g)</th>
+                    <th>Kilocalorías</th>
+                    <th>Proteína</th>
+                    <th>Hidratos</th>
+                    <th>Grasa</th>
+                    <th>Fibra</th>
+                </tr>
+            `;
+            table.appendChild(thead);
+
+            const tbody = document.createElement("tbody");
+            items.forEach((item, index) => {
+                const foodData = foods[item.food];
+                const grams = item.grams;
+                const kcal = (foodData.kcal * grams / 100).toFixed(1);
+                const protein = (foodData.protein * grams / 100).toFixed(1);
+                const carbs = (foodData.carbs * grams / 100).toFixed(1);
+                const fat = (foodData.fat * grams / 100).toFixed(1);
+                const fiber = (foodData.fiber * grams / 100).toFixed(1);
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${capitalizeWords(item.food)}</td>
+                    <td><input type="number" value="${grams}" onchange="updateGrams(${index}, this.value, '${user}', '${day}')"></td>
+                    <td>${kcal}</td>
+                    <td>${protein}</td>
+                    <td>${carbs}</td>
+                    <td>${fat}</td>
+                    <td>${fiber}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Calcular subtotal
+            const subtotal = items.reduce((acc, item) => {
+                const foodData = foods[item.food];
+                const grams = item.grams;
+                acc.calories += (foodData.kcal * grams / 100);
+                acc.protein += (foodData.protein * grams / 100);
+                acc.carbs += (foodData.carbs * grams / 100);
+                acc.fat += (foodData.fat * grams / 100);
+                acc.fiber += (foodData.fiber * grams / 100);
+                return acc;
+            }, { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 });
+
+            addSubtotalRow(tbody, sectionName, subtotal);
+            table.appendChild(tbody);
+            return table;
+        }
+
+        // Función para actualizar la tabla
+        function updateDiet() {
+            const user = document.getElementById("user").value;
+            const day = document.getElementById("day").value;
+            const diet = diets[user][day];
+            const container = document.getElementById("dietTables");
+            container.innerHTML = "";
+
+            // Mostrar u ocultar campos de peso
+            document.getElementById("jonWeightDiv").classList.toggle("visible", user === "jon");
+            document.getElementById("ainhoaWeightDiv").classList.toggle("visible", user === "ainhoa");
+
+            let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0, totalFiber = 0;
+
+            // Definir las secciones según el día
+            const sections = day === "training" ? 
+                ["Desayuno", "Pre-entreno", "Intra-entreno", "Post-entreno", "Comida", "Merienda", "Cena", "Pre-cama", "Snack"] :
+                ["Desayuno", "Comida", "Merienda", "Cena", "Pre-cama", "Snack"];
+
+            // Agrupar Pre/Intra/Post-entreno en una sola sección para días de entrenamiento
+            const sectionGroups = day === "training" ? {
+                "Desayuno": "Desayuno",
+                "Pre-entreno": "Pre/Intra/Post-entreno",
+                "Intra-entreno": "Pre/Intra/Post-entreno",
+                "Post-entreno": "Pre/Intra/Post-entreno",
+                "Comida": "Comida",
+                "Merienda": "Merienda",
+                "Cena": "Cena",
+                "Pre-cama": "Pre-cama",
+                "Snack": "Snack"
+            } : {
+                "Desayuno": "Desayuno",
+                "Comida": "Comida",
+                "Merienda": "Merienda",
+                "Cena": "Cena",
+                "Pre-cama": "Pre-cama",
+                "Snack": "Snack"
+            };
+
+            // Agrupar alimentos por sección
+            const groupedDiet = {};
+            diet.forEach(item => {
+                const section = sectionGroups[item.meal] || item.meal;
+                if (!groupedDiet[section]) {
+                    groupedDiet[section] = [];
+                }
+                groupedDiet[section].push(item);
+            });
+
+            // Crear una tabla por cada sección
+            for (const section in groupedDiet) {
+                const items = groupedDiet[section];
+                const table = createSectionTable(section, items, user, day);
+                container.appendChild(table);
+
+                // Sumar a los totales generales
+                items.forEach(item => {
+                    const foodData = foods[item.food];
+                    const grams = item.grams;
+                    totalCalories += (foodData.kcal * grams / 100);
+                    totalProtein += (foodData.protein * grams / 100);
+                    totalCarbs += (foodData.carbs * grams / 100);
+                    totalFat += (foodData.fat * grams / 100);
+                    totalFiber += (foodData.fiber * grams / 100);
+                });
+            }
+
+            // Actualizar totales generales
+            document.getElementById("totalCalories").textContent = totalCalories.toFixed(1);
+            document.getElementById("totalProtein").textContent = totalProtein.toFixed(1);
+            document.getElementById("totalCarbs").textContent = totalCarbs.toFixed(1);
+            document.getElementById("totalFat").textContent = totalFat.toFixed(1);
+            document.getElementById("totalFiber").textContent = totalFiber.toFixed(1);
+
+            const tdee = calculateTDEE(user, day);
+            const deficit = (tdee - totalCalories).toFixed(2); // Limitar a 2 decimales
+            document.getElementById("deficitInfo").textContent = `Déficit calórico: ${deficit} kcal (TDEE: ${tdee} kcal) - ${estimateWeightLoss(parseFloat(deficit))}`;
+        }
+
+        // Función para actualizar cantidades
+        function updateGrams(index, grams, user, day) {
+            diets[user][day][index].grams = parseFloat(grams);
+            updateDiet();
+        }
+
+        // Función para alternar entre modo claro y oscuro
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle("dark-mode");
+        }
+
+        // Inicializar la tabla
+        updateDiet();
+    </script>
+</body>
+</html>
