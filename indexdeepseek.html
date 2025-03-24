@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calculadora de Dieta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #2E7D32;
+            --primary-light: #81C784;
+            --secondary-color: #FF9800;
+            --background-light: #f8f9fa;
+            --background-dark: #1a1a1a;
+            --card-light: #ffffff;
+            --card-dark: #2a2a2a;
+            --text-light: #333333;
+            --text-dark: #e0e0e0;
+            --border-light: #e0e0e0;
+            --border-dark: #444444;
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --radius: 10px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background-light);
+            color: var(--text-light);
+            transition: var(--transition);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        body.dark-mode {
+            background-color: var(--background-dark);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        body.dark-mode h1,
+        body.dark-mode h2,
+        body.dark-mode h3,
+        body.dark-mode h4 {
+            color: var(--primary-light);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-top: 10px;
+            color: var(--primary-dark);
+        }
+
+        body.dark-mode h1 {
+            color: var(--primary-light);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-top: 30px;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-toggle i {
+            color: white;
+            font-size: 20px;
+        }
+
+        /* Card styling */
+        .card {
+            background-color: var(--card-light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 25px;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .card {
+            background-color: var(--card-dark);
+        }
+
+        /* Selectors section */
+        .selectors-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .selector-group {
+            display: flex;
+            align-items: center;
+            background-color: var(--card-light);
+            padding: 10px 15px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        body.dark-mode .selector-group {
+            background-color: var(--card-dark);
+        }
+
+        .selector-group label {
+            margin-right: 10px;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid var(--border-light);
+            font-size: 0.95rem;
+            background-color: var(--card-light);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        body.dark-mode select {
+            background-color: var(--card-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        /* Weight inputs */
+        .weight-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .weight-input {
+            display: none;
+            align-items: center;
+            background-color: var(--card-light);
+            padding: 10px 15px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        body.dark-mode .weight-input {
+            background-color: var(--card-dark);
+        }
+
+        .weight-input.visible {
+            display: flex;
+        }
+
+        .weight-input label {
+            margin-right: 10px;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .weight-input input {
+            padding: 8px 12px;
+            width: 80px;
+            border-radius: 5px;
+            border: 1px solid var(--border-light);
+            font-size: 0.95rem;
+            background-color: var(--card-light);
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        body.dark-mode .weight-input input {
+            background-color: var(--card-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .weight-input input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background-color: var(--card-light);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        body.dark-mode table {
+            background-color: var(--card-dark);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.dark-mode th,
+        body.dark-mode td {
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        body.dark-mode th {
+            background-color: var(--primary-dark);
+        }
+
+        td {
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode td {
+            color: var(--text-dark);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Section headers */
+        .section-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        body.dark-mode .section-header {
+            background-color: var(--primary-dark);
+        }
+
+        /* Input styling */
+        input[type="tel"] {
+            width: 60px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid var(--border-light);
+            font-size: 0.9rem;
+            background-color: var(--card-light);
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        body.dark-mode input[type="tel"] {
+            background-color: var(--card-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        /* Total and subtotal rows */
+        .total {
+            font-weight: bold;
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        body.dark-mode .total {
+            background-color: rgba(46, 125, 50, 0.2);
+        }
+
+        .subtotal {
+            font-weight: bold;
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+
+        body.dark-mode .subtotal {
+            background-color: rgba(0, 86, 179, 0.2);
+        }
+
+        /* Deficit info */
+        .deficit {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: var(--warning-color);
+            border-radius: var(--radius);
+            text-align: center;
+            font-size: 1rem;
+            color: #1a1a1a;
+            box-shadow: var(--shadow);
+        }
+
+        body.dark-mode .deficit {
+            background-color: #d4a017;
+        }
+
+        /* Summary card */
+        .summary {
+            margin: 25px 0;
+            padding: 20px;
+            background-color: var(--card-light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        body.dark-mode .summary {
+            background-color: var(--card-dark);
+        }
+
+        .summary p {
+            margin: 10px 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        body.dark-mode .summary p {
+            color: var(--text-dark);
+        }
+
+        .summary strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        body.dark-mode .summary strong {
+            color: var(--primary-light);
+        }
+
+        /* Activity section */
+        .activity-section {
+            margin: 25px 0;
+            padding: 20px;
+            background-color: var(--card-light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        body.dark-mode .activity-section {
+            background-color: var(--card-dark);
+        }
+
+        .activity-section h3 {
+            margin-bottom: 15px;
+        }
+
+        .activity-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .activity-row label {
+            font-weight: 500;
+            font-size: 0.95rem;
+            min-width: 120px;
+        }
+
+        body.dark-mode .activity-row label {
+            color: var(--text-dark);
+        }
+
+        .activity-row input {
+            margin-right: 10px;
+        }
+
+        .activity-calories {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: rgba(76, 175, 80, 0.1);
+            border-radius: var(--radius);
+        }
+
+        body.dark-mode .activity-calories {
+            color: var(--primary-light);
+            background-color: rgba(46, 125, 50, 0.2);
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            h3 {
+                font-size: 1.2rem;
+            }
+            
+            .selectors-container, .weight-inputs {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            
+            .selector-group, .weight-input {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .section-header {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+            
+            input[type="tel"] {
+                width: 50px;
+                padding: 6px;
+                font-size: 0.8rem;
+            }
+            
+            .activity-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .activity-row label {
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+                margin-top: 40px;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                width: 35px;
+                height: 35px;
+            }
+            
+            th, td {
+                padding: 6px 8px;
+                font-size: 0.75rem;
+            }
+            
+            input[type="tel"] {
+                width: 45px;
+                padding: 5px;
+                font-size: 0.75rem;
+            }
+            
+            .summary p, .activity-row label {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card, .table-container, .summary, .activity-section {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="dark-mode">
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="container">
+        <h1>Calculadora de Dieta</h1>
+        
+        <div class="selectors-container">
+            <div class="selector-group">
+                <label for="user">Usuario:</label>
+                <select id="user" onchange="updateDiet()">
+                    <option value="jon">Jon</option>
+                    <option value="ainhoa">Ainhoa</option>
+                </select>
+            </div>
+            
+            <div class="selector-group">
+                <label for="day">Día:</label>
+                <select id="day" onchange="updateDiet()">
+                    <option value="training">Entrenamiento</option>
+                    <option value="monday_wednesday">Lunes-Miércoles</option>
+                    <option value="thursday">Jueves</option>
+                    <option value="saturday">Sábado</option>
+                    <option value="sunday">Domingo</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="weight-inputs">
+            <div class="weight-input" id="jonWeightDiv">
+                <label for="jonWeight">Peso de Jon (kg):</label>
+                <input type="number" id="jonWeight" value="88.7" step="0.1" onchange="updateDiet()">
+            </div>
+            
+            <div class="weight-input" id="ainhoaWeightDiv">
+                <label for="ainhoaWeight">Peso de Ainhoa (kg):</label>
+                <input type="number" id="ainhoaWeight" value="58" step="0.1" onchange="updateDiet()">
+            </div>
+        </div>
+
+        <h2>Comidas y Suplementos</h2>
+        <div class="card">
+            <div class="table-container" id="dietTables"></div>
+        </div>
+
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="5">Totales Generales</th>
+                        </tr>
+                        <tr>
+                            <th>Kilocal</th>
+                            <th>Proteína</th>
+                            <th>Hidratos</th>
+                            <th>Grasa</th>
+                            <th>Fibra</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="total">
+                            <td id="totalCalories">0</td>
+                            <td id="totalProtein">0</td>
+                            <td id="totalCarbs">0</td>
+                            <td id="totalFat">0</td>
+                            <td id="totalFiber">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="deficit" id="deficitInfo"></div>
+        </div>
+
+        <div class="card summary" id="summaryInfo">
+            <p><strong>Kilocal:</strong> Representan la energía total que consumes. Mantener un déficit calórico (comer menos de lo que gastas) es clave para perder peso. Tu TDEE varía según el día y el usuario.</p>
+            <p><strong>Proteína:</strong> Esencial para la reparación y crecimiento muscular, especialmente en días de entrenamiento. Apunta a 1.6-2.2 g/kg de peso corporal para preservar músculo en déficit.</p>
+            <p><strong>Hidratos:</strong> Principal fuente de energía, especialmente importante en días de entrenamiento para reponer glucógeno. Incluyen azúcares y fibra; prioriza fuentes con fibra para saciedad.</p>
+            <p><strong>Grasa:</strong> Crucial para la salud hormonal, especialmente en mujeres en perimenopausia. Apunta a 0.8-1 g/kg, con un enfoque en grasas saludables (como aguacate, nueces, aceite de oliva).</p>
+            <p><strong>Fibra:</strong> Ayuda a la saciedad y la salud digestiva. La recomendación es 25-30 g/día para mujeres y 30-38 g/día para hombres. Aumenta la fibra para controlar el hambre en déficit.</p>
+        </div>
+
+        <div class="card activity-section">
+            <h3>Actividades Extra</h3>
+            <div class="activity-row">
+                <label for="walk1Distance">Caminata 1 - Kilómetros:</label>
+                <input type="tel" id="walk1Distance" value="0" step="0.1" pattern="[0-9]*" inputmode="numeric" onchange="updateDiet()">
+                <label for="walk1Time">o Tiempo (min):</label>
+                <input type="tel" id="walk1Time" value="0" step="1" pattern="[0-9]*" inputmode="numeric" onchange="updateDiet()">
+            </div>
+            <div class="activity-row">
+                <label for="walk2Distance">Caminata 2 - Kilómetros:</label>
+                <input type="tel" id="walk2Distance" value="0" step="0.1" pattern="[0-9]*" inputmode="numeric" onchange="updateDiet()">
+                <label for="walk2Time">o Tiempo (min):</label>
+                <input type="tel" id="walk2Time" value="0" step="1" pattern="[0-9]*" inputmode="numeric" onchange="updateDiet()">
+            </div>
+            <div class="activity-row">
+                <label for="gymTime">Gym (Pesas) - Tiempo (min):</label>
+                <input type="tel" id="gymTime" value="0" step="1" pattern="[0-9]*" inputmode="numeric" onchange="updateDiet()">
+            </div>
+            <div class="activity-calories" id="activityCalories">Calorías quemadas por actividad: 0 kcal</div>
+        </div>
+    </div>
+
+    <script>
+        const foods = {
+            "claras_huevo": { kcal: 33, protein: 11, carbs: 0.4, fat: 0, fiber: 0 },
+            "huevo_completo": { kcal: 143, protein: 12.7, carbs: 1.1, fat: 9.5, fiber: 0 },
+            "harina_avena": { kcal: 390, protein: 13, carbs: 68, fat: 7, fiber: 9 },
+            "fresas": { kcal: 32, protein: 0.7, carbs: 7.7, fat: 0.3, fiber: 2 },
+            "aguacate": { kcal: 160, protein: 2, carbs: 8.5, fat: 14.7, fiber: 6.7 },
+            "pollo": { kcal: 165, protein: 31, carbs: 0, fat: 3.5, fiber: 0 },
+            "arroz_blanco": { kcal: 130, protein: 2.7, carbs: 28.1, fat: 0.3, fiber: 0.4 },
+            "aceite_oliva": { kcal: 900, protein: 0, carbs: 0, fat: 100, fiber: 0 },
+            "brócoli": { kcal: 35, protein: 2.5, carbs: 7.1, fat: 0.4, fiber: 3.3 },
+            "whey": { kcal: 370, protein: 90, carbs: 2, fat: 1, fiber: 0 },
+            "salmón": { kcal: 206, protein: 22, carbs: 0, fat: 13, fiber: 0 },
+            "espinacas": { kcal: 23, protein: 2.9, carbs: 3.6, fat: 0.4, fiber: 2.2 },
+            "patata": { kcal: 77, protein: 2.5, carbs: 17, fat: 0.1, fiber: 2.2 },
+            "caseína": { kcal: 360, protein: 80, carbs: 5, fat: 2.5, fiber: 0 },
+            "pan_integral": { kcal: 246, protein: 9, carbs: 42, fat: 3, fiber: 6 },
+            "pan_integral_32g": { kcal: 246.875, protein: 8.75, carbs: 40.625, fat: 3.75, fiber: 7.5 },
+            "pan_fibra_sesamo": { kcal: 395.833, protein: 12.5, carbs: 60.417, fat: 7.292, fiber: 23.958 },
+            "almendras": { kcal: 600, protein: 21, carbs: 21, fat: 50, fiber: 13 },
+            "nueces": { kcal: 654, protein: 15.2, carbs: 13.7, fat: 65, fiber: 6.7 },
+            "eaa": { kcal: 400, protein: 90, carbs: 0, fat: 0, fiber: 0 },
+            "dextrosa": { kcal: 400, protein: 0, carbs: 100, fat: 0, fiber: 0 },
+            "creatina": { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+            "cafe": { kcal: 275, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+            "vacio": { kcal: 131, protein: 21, carbs: 0, fat: 5, fiber: 0 },
+            "entrecot_ternera": { kcal: 250, protein: 25, carbs: 0, fat: 16, fiber: 0 },
+            "ensalada_gourmet": { kcal: 43.41, protein: 0.95, carbs: 4.73, fat: 2.61, fiber: 1.36 },
+            "tortita_avena_hacendado": { kcal: 287, protein: 15, carbs: 40, fat: 6, fiber: 5.4 },
+            "pavo_cena": { kcal: 79, protein: 16, carbs: 1.8, fat: 0.9, fiber: 0 },
+            "queso_cena": { kcal: 267, protein: 27, carbs: 0, fat: 17, fiber: 0 },
+            "copa_vino_125g": { kcal: 68, protein: 0, carbs: 2.6, fat: 0, fiber: 0 },
+            "cubata_ron_barcelo_pepsi_light_330ml": { kcal: 33.636, protein: 0, carbs: 0.085, fat: 0, fiber: 0 },
+            "pastilla_l_carnitina": { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+            "pre_entreno_hsn_evordx": { kcal: 220, protein: 4, carbs: 50, fat: 0, fiber: 0 },
+            "carne_hamburguesa": { kcal: 240, protein: 19.17, carbs: 0.5, fat: 18.33, fiber: 0 }
+        };
+
+        const diets = {
+            jon: {
+                training: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 200 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 20 },
+                    { meal: "Desayuno", food: "fresas", grams: 0 },
+                    { meal: "Desayuno", food: "aguacate", grams: 50 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Desayuno", food: "pan_integral_32g", grams: 0 },
+                    { meal: "Pre-entreno", food: "pastilla_l_carnitina", grams: 1 },
+                    { meal: "Pre-entreno", food: "pre_entreno_hsn_evordx", grams: 30 },
+                    { meal: "Pre-entreno", food: "eaa", grams: 20 },
+                    { meal: "Pre-entreno", food: "dextrosa", grams: 5 },
+                    { meal: "Pre-entreno", food: "cafe", grams: 4 },
+                    { meal: "Intra-entreno", food: "eaa", grams: 20 },
+                    { meal: "Intra-entreno", food: "dextrosa", grams: 20 },
+                    { meal: "Post-entreno", food: "eaa", grams: 10 },
+                    { meal: "Post-entreno", food: "dextrosa", grams: 20 },
+                    { meal: "Comida", food: "pollo", grams: 80 },
+                    { meal: "Comida", food: "arroz_blanco", grams: 80 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 5 },
+                    { meal: "Comida", food: "brócoli", grams: 100 },
+                    { meal: "Comida", food: "pan_fibra_sesamo", grams: 9.6 },
+                    { meal: "Comida", food: "huevo_completo", grams: 60 },
+                    { meal: "Merienda", food: "whey", grams: 20 },
+                    { meal: "Merienda", food: "fresas", grams: 0 },
+                    { meal: "Cena", food: "ensalada_gourmet", grams: 205 },
+                    { meal: "Cena", food: "tortita_avena_hacendado", grams: 63 },
+                    { meal: "Cena", food: "pavo_cena", grams: 22 },
+                    { meal: "Cena", food: "queso_cena", grams: 51 },
+                    { meal: "Cena", food: "huevo_completo", grams: 60 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 1 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Otros", food: "copa_vino_125g", units: 2 },
+                    { meal: "Otros", food: "cubata_ron_barcelo_pepsi_light_330ml", units: 0 }
+                ],
+                monday_wednesday: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 200 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 20 },
+                    { meal: "Desayuno", food: "fresas", grams: 0 },
+                    { meal: "Desayuno", food: "aguacate", grams: 50 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Desayuno", food: "pan_integral_32g", grams: 0 },
+                    { meal: "Pre-entreno", food: "pastilla_l_carnitina", grams: 1 },
+                    { meal: "Pre-entreno", food: "pre_entreno_hsn_evordx", grams: 30 },
+                    { meal: "Pre-entreno", food: "eaa", grams: 20 },
+                    { meal: "Pre-entreno", food: "dextrosa", grams: 5 },
+                    { meal: "Pre-entreno", food: "cafe", grams: 4 },
+                    { meal: "Intra-entreno", food: "eaa", grams: 20 },
+                    { meal: "Intra-entreno", food: "dextrosa", grams: 20 },
+                    { meal: "Post-entreno", food: "eaa", grams: 10 },
+                    { meal: "Post-entreno", food: "dextrosa", grams: 20 },
+                    { meal: "Comida", food: "pollo", grams: 80 },
+                    { meal: "Comida", food: "arroz_blanco", grams: 80 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 5 },
+                    { meal: "Comida", food: "brócoli", grams: 100 },
+                    { meal: "Comida", food: "pan_fibra_sesamo", grams: 9.6 },
+                    { meal: "Comida", food: "huevo_completo", grams: 60 },
+                    { meal: "Merienda", food: "whey", grams: 20 },
+                    { meal: "Merienda", food: "fresas", grams: 0 },
+                    { meal: "Cena", food: "ensalada_gourmet", grams: 205 },
+                    { meal: "Cena", food: "patata", grams: 200 },
+                    { meal: "Cena", food: "queso_cena", grams: 51 },
+                    { meal: "Cena", food: "carne_hamburguesa", grams: 120 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Otros", food: "copa_vino_125g", units: 2 },
+                    { meal: "Otros", food: "cubata_ron_barcelo_pepsi_light_330ml", units: 0 }
+                ],
+                thursday: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 100 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 20 },
+                    { meal: "Desayuno", food: "fresas", grams: 0 },
+                    { meal: "Desayuno", food: "aguacate", grams: 50 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Desayuno", food: "creatina", grams: 5 },
+                    { meal: "Desayuno", food: "cafe", grams: 1 },
+                    { meal: "Desayuno", food: "caseína", grams: 30 },
+                    { meal: "Desayuno", food: "pan_integral_32g", grams: 0 },
+                    { meal: "Comida", food: "pollo", grams: 60 },
+                    { meal: "Comida", food: "arroz_blanco", grams: 60 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 7 },
+                    { meal: "Comida", food: "brócoli", grams: 100 },
+                    { meal: "Comida", food: "pan_fibra_sesamo", grams: 9.6 },
+                    { meal: "Comida", food: "huevo_completo", grams: 60 },
+                    { meal: "Merienda", food: "caseína", grams: 30 },
+                    { meal: "Cena", food: "ensalada_gourmet", grams: 205 },
+                    { meal: "Cena", food: "tortita_avena_hacendado", grams: 63 },
+                    { meal: "Cena", food: "pavo_cena", grams: 22 },
+                    { meal: "Cena", food: "queso_cena", grams: 51 },
+                    { meal: "Cena", food: "huevo_completo", grams: 60 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 1 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Otros", food: "copa_vino_125g", units: 2 },
+                    { meal: "Otros", food: "cubata_ron_barcelo_pepsi_light_330ml", units: 0 }
+                ],
+                saturday: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 100 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 20 },
+                    { meal: "Desayuno", food: "fresas", grams: 0 },
+                    { meal: "Desayuno", food: "aguacate", grams: 50 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Desayuno", food: "creatina", grams: 5 },
+                    { meal: "Desayuno", food: "cafe", grams: 1 },
+                    { meal: "Desayuno", food: "caseína", grams: 30 },
+                    { meal: "Desayuno", food: "pan_integral_32g", grams: 0 },
+                    { meal: "Comida", food: "entrecot_ternera", grams: 100 },
+                    { meal: "Comida", food: "patata", grams: 200 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 1 },
+                    { meal: "Comida", food: "huevo_completo", grams: 60 },
+                    { meal: "Merienda", food: "caseína", grams: 30 },
+                    { meal: "Cena", food: "ensalada_gourmet", grams: 205 },
+                    { meal: "Cena", food: "tortita_avena_hacendado", grams: 63 },
+                    { meal: "Cena", food: "pavo_cena", grams: 22 },
+                    { meal: "Cena", food: "queso_cena", grams: 51 },
+                    { meal: "Cena", food: "huevo_completo", grams: 60 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 1 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Otros", food: "copa_vino_125g", units: 2 },
+                    { meal: "Otros", food: "cubata_ron_barcelo_pepsi_light_330ml", units: 0 }
+                ],
+                sunday: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 100 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 20 },
+                    { meal: "Desayuno", food: "fresas", grams: 0 },
+                    { meal: "Desayuno", food: "aguacate", grams: 50 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Desayuno", food: "creatina", grams: 5 },
+                    { meal: "Desayuno", food: "cafe", grams: 1 },
+                    { meal: "Desayuno", food: "caseína", grams: 30 },
+                    { meal: "Desayuno", food: "pan_integral_32g", grams: 0 },
+                    { meal: "Comida", food: "entrecot_ternera", grams: 100 },
+                    { meal: "Comida", food: "patata", grams: 200 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 1 },
+                    { meal: "Comida", food: "huevo_completo", grams: 60 },
+                    { meal: "Merienda", food: "caseína", grams: 30 },
+                    { meal: "Cena", food: "ensalada_gourmet", grams: 205 },
+                    { meal: "Cena", food: "tortita_avena_hacendado", grams: 63 },
+                    { meal: "Cena", food: "pavo_cena", grams: 22 },
+                    { meal: "Cena", food: "queso_cena", grams: 51 },
+                    { meal: "Cena", food: "huevo_completo", grams: 60 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 1 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Otros", food: "copa_vino_125g", units: 2 },
+                    { meal: "Otros", food: "cubata_ron_barcelo_pepsi_light_330ml", units: 0 }
+                ]
+            },
+            ainhoa: {
+                training: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 200 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 30 },
+                    { meal: "Desayuno", food: "fresas", grams: 0 },
+                    { meal: "Desayuno", food: "aguacate", grams: 50 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Desayuno", food: "pan_integral_32g", grams: 0 },
+                    { meal: "Pre-entreno", food: "pastilla_l_carnitina", grams: 1 },
+                    { meal: "Pre-entreno", food: "pre_entreno_hsn_evordx", grams: 30 },
+                    { meal: "Pre-entreno", food: "eaa", grams: 20 },
+                    { meal: "Pre-entreno", food: "dextrosa", grams: 5 },
+                    { meal: "Pre-entreno", food: "cafe", grams: 4 },
+                    { meal: "Post-entreno", food: "eaa", grams: 20 },
+                    { meal: "Post-entreno", food: "dextrosa", grams: 5 },
+                    { meal: "Post-entreno", food: "creatina", grams: 5 },
+                    { meal: "Comida", food: "pollo", grams: 60 },
+                    { meal: "Comida", food: "arroz_blanco", grams: 80 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 10 },
+                    { meal: "Comida", food: "brócoli", grams: 100 },
+                    { meal: "Comida", food: "pan_fibra_sesamo", grams: 9.6 },
+                    { meal: "Comida", food: "huevo_completo", grams: 60 },
+                    { meal: "Merienda", food: "whey", grams: 20 },
+                    { meal: "Merienda", food: "fresas", grams: 0 },
+                    { meal: "Cena", food: "salmón", grams: 80 },
+                    { meal: "Cena", food: "patata", grams: 80 },
+                    { meal: "Cena", food: "espinacas", grams: 100 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 7 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Otros", food: "copa_vino_125g", units: 0 },
+                    { meal: "Snack", food: "pan_integral", grams: 0 },
+                    { meal: "Snack", food: "almendras", grams: 0 }
+                ],
+                monday_wednesday: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 200 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 30 },
+                    { meal: "Desayuno", food: "fresas", grams: 0 },
+                    { meal: "Desayuno", food: "aguacate", grams: 50 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Desayuno", food: "pan_integral_32g", grams: 0 },
+                    { meal: "Pre-entreno", food: "pastilla_l_carnitina", grams: 1 },
+                    { meal: "Pre-entreno", food: "pre_entreno_hsn_evordx", grams: 30 },
+                    { meal: "Pre-entreno", food: "eaa", grams: 20 },
+                    { meal: "Pre-entreno", food: "dextrosa", grams: 5 },
+                    { meal: "Pre-entreno", food: "cafe", grams: 4 },
+                    { meal: "Post-entreno", food: "eaa", grams: 20 },
+                    { meal: "Post-entreno", food: "dextrosa", grams: 5 },
+                    { meal: "Post-entreno", food: "creatina", grams: 5 },
+                    { meal: "Comida", food: "pollo", grams: 60 },
+                    { meal: "Comida", food: "arroz_blanco", grams: 80 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 10 },
+                    { meal: "Comida", food: "brócoli", grams: 100 },
+                    { meal: "Comida", food: "pan_fibra_sesamo", grams: 9.6 },
+                    { meal: "Comida", food: "huevo_completo", grams: 60 },
+                    { meal: "Merienda", food: "whey", grams: 20 },
+                    { meal: "Merienda", food: "fresas", grams: 0 },
+                    { meal: "Cena", food: "ensalada_gourmet", grams: 205 },
+                    { meal: "Cena", food: "patata", grams: 200 },
+                    { meal: "Cena", food: "queso_cena", grams: 51 },
+                    { meal: "Cena", food: "carne_hamburguesa", grams: 120 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Otros", food: "copa_vino_125g", units: 0 },
+                    { meal: "Snack", food: "pan_integral", grams: 0 },
+                    { meal: "Snack", food: "almendras", grams: 0 }
+                ],
+                thursday: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 100 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 20 },
+                    { meal: "Desayuno", food: "fresas", grams: 0 },
+                    { meal: "Desayuno", food: "aguacate", grams: 35 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Desayuno", food: "creatina", grams: 5 },
+                    { meal: "Desayuno", food: "cafe", grams: 1 },
+                    { meal: "Desayuno", food: "pan_integral_32g", grams: 0 },
+                    { meal: "Comida", food: "pollo", grams: 60 },
+                    { meal: "Comida", food: "arroz_blanco", grams: 60 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 7 },
+                    { meal: "Comida", food: "brócoli", grams: 100 },
+                    { meal: "Comida", food: "pan_fibra_sesamo", grams: 9.6 },
+                    { meal: "Comida", food: "huevo_completo", grams: 60 },
+                    { meal: "Merienda", food: "whey", grams: 20 },
+                    { meal: "Cena", food: "salmón", grams: 80 },
+                    { meal: "Cena", food: "espinacas", grams: 100 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 7 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Otros", food: "copa_vino_125g", units: 0 },
+                    { meal: "Snack", food: "pan_integral", grams: 0 },
+                    { meal: "Snack", food: "almendras", grams: 0 }
+                ],
+                saturday: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 100 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 20 },
+                    { meal: "Desayuno", food: "fresas", grams: 0 },
+                    { meal: "Desayuno", food: "aguacate", grams: 35 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Desayuno", food: "creatina", grams: 5 },
+                    { meal: "Desayuno", food: "cafe", grams: 1 },
+                    { meal: "Desayuno", food: "pan_integral_32g", grams: 0 },
+                    { meal: "Comida", food: "entrecot_ternera", grams: 100 },
+                    { meal: "Comida", food: "patata", grams: 200 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 1 },
+                    { meal: "Comida", food: "huevo_completo", grams: 60 },
+                    { meal: "Merienda", food: "whey", grams: 20 },
+                    { meal: "Cena", food: "salmón", grams: 80 },
+                    { meal: "Cena", food: "espinacas", grams: 100 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 7 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Otros", food: "copa_vino_125g", units: 0 },
+                    { meal: "Snack", food: "pan_integral", grams: 0 },
+                    { meal: "Snack", food: "almendras", grams: 0 }
+                ],
+                sunday: [
+                    { meal: "Desayuno", food: "claras_huevo", grams: 100 },
+                    { meal: "Desayuno", food: "huevo_completo", grams: 60 },
+                    { meal: "Desayuno", food: "harina_avena", grams: 20 },
+                    { meal: "Desayuno", food: "fresas", grams: 0 },
+                    { meal: "Desayuno", food: "aguacate", grams: 35 },
+                    { meal: "Desayuno", food: "nueces", grams: 15 },
+                    { meal: "Desayuno", food: "creatina", grams: 5 },
+                    { meal: "Desayuno", food: "cafe", grams: 1 },
+                    { meal: "Desayuno", food: "pan_integral_32g", grams: 0 },
+                    { meal: "Comida", food: "entrecot_ternera", grams: 100 },
+                    { meal: "Comida", food: "patata", grams: 200 },
+                    { meal: "Comida", food: "aceite_oliva", grams: 1 },
+                    { meal: "Comida", food: "huevo_completo", grams: 60 },
+                    { meal: "Merienda", food: "whey", grams: 20 },
+                    { meal: "Cena", food: "salmón", grams: 80 },
+                    { meal: "Cena", food: "espinacas", grams: 100 },
+                    { meal: "Cena", food: "aceite_oliva", grams: 7 },
+                    { meal: "Pre-cama", food: "caseína", grams: 30 },
+                    { meal: "Otros", food: "copa_vino_125g", units: 0 },
+                    { meal: "Snack", food: "pan_integral", grams: 0 },
+                    { meal: "Snack", food: "almendras", grams: 0 }
+                ]
+            }
+        };
+
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle("dark-mode");
+            
+            const themeToggle = document.querySelector('.theme-toggle i');
+            if (body.classList.contains("dark-mode")) {
+                themeToggle.classList.remove("fa-moon");
+                themeToggle.classList.add("fa-sun");
+            } else {
+                themeToggle.classList.remove("fa-sun");
+                themeToggle.classList.add("fa-moon");
+            }
+        }
+
+        function capitalizeWords(str) {
+            if (str === "cubata_ron_barcelo_pepsi_light_330ml") {
+                return "Cubata de Ron Cola";
+            }
+            if (str === "huevo_completo") {
+                const user = document.getElementById("user").value;
+                const day = document.getElementById("day").value;
+                const diet = diets[user][day];
+                const meal = diet.find(item => item.food === "huevo_completo")?.meal;
+                if (meal === "Comida" && (day === "saturday" || day === "sunday" || day === "monday_wednesday")) {
+                    return "Huevo Frito Airfryer";
+                }
+                if (meal === "Comida" && (day === "training" || day === "thursday")) {
+                    return "Huevo Cocido";
+                }
+                return "Huevo Completo";
+            }
+            if (str === "pastilla_l_carnitina") {
+                return "Pastilla L-Carnitina";
+            }
+            if (str === "pre_entreno_hsn_evordx") {
+                return "Pre-entreno HSN";
+            }
+            if (str === "cafe") {
+                return "Café en Polvo";
+            }
+            return str.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+        }
+
+        function calculateActivityCalories(user) {
+            const walk1Distance = parseFloat(document.getElementById("walk1Distance").value) || 0;
+            const walk1Time = parseFloat(document.getElementById("walk1Time").value) || 0;
+            const walk2Distance = parseFloat(document.getElementById("walk2Distance").value) || 0;
+            const walk2Time = parseFloat(document.getElementById("walk2Time").value) || 0;
+            const gymTime = parseFloat(document.getElementById("gymTime").value) || 0;
+
+            const weight = user === "jon" ? parseFloat(document.getElementById("jonWeight").value) : parseFloat(document.getElementById("ainhoaWeight").value);
+
+            let walk1Calories = 0, walk2Calories = 0;
+            if (walk1Distance > 0) {
+                const walk1Hours = walk1Distance / 4;
+                walk1Calories = 3.5 * weight * walk1Hours;
+            } else if (walk1Time > 0) {
+                walk1Calories = 3.5 * weight * (walk1Time / 60);
+            }
+
+            if (walk2Distance > 0) {
+                const walk2Hours = walk2Distance / 4;
+                walk2Calories = 3.5 * weight * walk2Hours;
+            } else if (walk2Time > 0) {
+                walk2Calories = 3.5 * weight * (walk2Time / 60);
+            }
+
+            const gymCalories = gymTime > 0 ? 6 * weight * (gymTime / 60) : 0;
+
+            return Math.round(walk1Calories + walk2Calories + gymCalories);
+        }
+
+        function calculateTDEE(user, day) {
+            const jonWeight = parseFloat(document.getElementById("jonWeight").value);
+            const ainhoaWeight = parseFloat(document.getElementById("ainhoaWeight").value);
+
+            const jonHeight = 178;
+            const ainhoaHeight = 165;
+            const age = 47;
+
+            const activityFactor = (day === "training" || day === "monday_wednesday") ? 1.55 : 1.375;
+
+            let bmr;
+            if (user === "jon") {
+                bmr = 10 * jonWeight + 6.25 * jonHeight - 5 * age + 5;
+            } else {
+                bmr = 10 * ainhoaWeight + 6.25 * ainhoaHeight - 5 * age - 161;
+            }
+
+            return Math.round(bmr * activityFactor);
+        }
+
+        function estimateWeightLoss(deficit) {
+            if (deficit <= 0) return "Sin pérdida de peso estimada (superávit o equilibrio calórico).";
+            const gramsPerDay = (deficit * 1000) / 7700;
+            const gramsPerWeek = gramsPerDay * 7;
+            return `Pérdida estimada: ${gramsPerDay.toFixed(1)} g/día (${gramsPerWeek.toFixed(1)} g/semana).`;
+        }
+
+        function createSectionTable(section, items, user, day, startIndex) {
+            const table = document.createElement("table");
+            const thead = document.createElement("thead");
+            const tbody = document.createElement("tbody");
+
+            const sectionHeader = document.createElement("tr");
+            const sectionCell = document.createElement("th");
+            sectionCell.colSpan = 7;
+            sectionCell.className = "section-header";
+            sectionCell.textContent = section;
+            sectionHeader.appendChild(sectionCell);
+            thead.appendChild(sectionHeader);
+
+            const headerRow = document.createElement("tr");
+            ["Alimento", "Cantidad (g)", "Kilocal", "Proteína", "Hidratos", "Grasa", "Fibra"].forEach(text => {
+                const th = document.createElement("th");
+                th.textContent = text;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            let subtotalCalories = 0, subtotalProtein = 0, subtotalCarbs = 0, subtotalFat = 0, subtotalFiber = 0;
+
+            items.forEach((item, index) => {
+                const row = document.createElement("tr");
+                const foodData = foods[item.food];
+                const grams = item.units !== undefined ? (item.food === "copa_vino_125g" ? item.units * 125 : item.units * 330) : item.grams;
+
+                const foodCell = document.createElement("td");
+                foodCell.textContent = capitalizeWords(item.food);
+                row.appendChild(foodCell);
+
+                const gramsCell = document.createElement("td");
+                const input = document.createElement("input");
+                input.type = "tel";
+                input.value = item.units !== undefined ? item.units : item.grams;
+                input.dataset.index = startIndex + index;
+                input.onchange = () => {
+                    const newValue = parseFloat(input.value) || 0;
+                    if (item.units !== undefined) {
+                        diets[user][day][startIndex + index].units = newValue;
+                    } else {
+                        diets[user][day][startIndex + index].grams = newValue;
+                    }
+                    updateDiet();
+                };
+                gramsCell.appendChild(input);
+                row.appendChild(gramsCell);
+
+                const calories = (foodData.kcal * grams / 100).toFixed(1);
+                const caloriesCell = document.createElement("td");
+                caloriesCell.textContent = calories;
+                row.appendChild(caloriesCell);
+
+                const protein = (foodData.protein * grams / 100).toFixed(1);
+                const proteinCell = document.createElement("td");
+                proteinCell.textContent = protein;
+                row.appendChild(proteinCell);
+
+                const carbs = (foodData.carbs * grams / 100).toFixed(1);
+                const carbsCell = document.createElement("td");
+                carbsCell.textContent = carbs;
+                row.appendChild(carbsCell);
+
+                const fat = (foodData.fat * grams / 100).toFixed(1);
+                const fatCell = document.createElement("td");
+                fatCell.textContent = fat;
+                row.appendChild(fatCell);
+
+                const fiber = (foodData.fiber * grams / 100).toFixed(1);
+                const fiberCell = document.createElement("td");
+                fiberCell.textContent = fiber;
+                row.appendChild(fiberCell);
+
+                tbody.appendChild(row);
+
+                subtotalCalories += parseFloat(calories);
+                subtotalProtein += parseFloat(protein);
+                subtotalCarbs += parseFloat(carbs);
+                subtotalFat += parseFloat(fat);
+                subtotalFiber += parseFloat(fiber);
+            });
+
+            const subtotalRow = document.createElement("tr");
+            subtotalRow.className = "subtotal";
+            const subtotalLabel = document.createElement("td");
+            subtotalLabel.textContent = "Subtotal";
+            subtotalRow.appendChild(subtotalLabel);
+
+            const emptyCell = document.createElement("td");
+            subtotalRow.appendChild(emptyCell);
+
+            const subtotalCaloriesCell = document.createElement("td");
+            subtotalCaloriesCell.textContent = subtotalCalories.toFixed(1);
+            subtotalRow.appendChild(subtotalCaloriesCell);
+
+            const subtotalProteinCell = document.createElement("td");
+            subtotalProteinCell.textContent = subtotalProtein.toFixed(1);
+            subtotalRow.appendChild(subtotalProteinCell);
+
+            const subtotalCarbsCell = document.createElement("td");
+            subtotalCarbsCell.textContent = subtotalCarbs.toFixed(1);
+            subtotalRow.appendChild(subtotalCarbsCell);
+
+            const subtotalFatCell = document.createElement("td");
+            subtotalFatCell.textContent = subtotalFat.toFixed(1);
+            subtotalRow.appendChild(subtotalFatCell);
+
+            const subtotalFiberCell = document.createElement("td");
+            subtotalFiberCell.textContent = subtotalFiber.toFixed(1);
+            subtotalRow.appendChild(subtotalFiberCell);
+
+            tbody.appendChild(subtotalRow);
+            table.appendChild(tbody);
+
+            return table;
+        }
+
+        function updateDiet() {
+            const user = document.getElementById("user").value;
+            const day = document.getElementById("day").value;
+            const diet = diets[user][day];
+            const container = document.getElementById("dietTables");
+            container.innerHTML = "";
+
+            document.getElementById("jonWeightDiv").classList.toggle("visible", user === "jon");
+            document.getElementById("ainhoaWeightDiv").classList.toggle("visible", user === "ainhoa");
+
+            const gymTimeInput = document.getElementById("gymTime");
+            if (day === "training" || day === "monday_wednesday") {
+                gymTimeInput.value = 45;
+            } else {
+                gymTimeInput.value = 0;
+            }
+
+            let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0, totalFiber = 0;
+
+            const sections = (user === "jon" && (day === "thursday" || day === "saturday" || day === "sunday")) ?
+                ["Desayuno", "Comida", "Merienda", "Cena", "Pre-cama", "Otros", "Snack"] :
+                ((day === "training" || day === "monday_wednesday") ?
+                    ["Desayuno", "Pre-entreno", "Intra-entreno", "Post-entreno", "Comida", "Merienda", "Cena", "Pre-cama", "Otros", "Snack"] :
+                    ["Desayuno", "Comida", "Merienda", "Cena", "Pre-cama", "Otros", "Snack"]);
+
+            const sectionGroups = (day === "training" || day === "monday_wednesday") ? {
+                "Desayuno": "Desayuno",
+                "Pre-entreno": "Pre/Intra/Post-entreno",
+                "Intra-entreno": "Pre/Intra/Post-entreno",
+                "Post-entreno": "Pre/Intra/Post-entreno",
+                "Comida": "Comida",
+                "Merienda": "Merienda",
+                "Cena": "Cena",
+                "Pre-cama": "Pre-cama",
+                "Otros": "Otros",
+                "Snack": "Snack"
+            } : {
+                "Desayuno": "Desayuno",
+                "Comida": "Comida",
+                "Merienda": "Merienda",
+                "Cena": "Cena",
+                "Pre-cama": "Pre-cama",
+                "Otros": "Otros",
+                "Snack": "Snack"
+            };
+
+            const groupedDiet = {};
+            diet.forEach(item => {
+                const section = sectionGroups[item.meal] || item.meal;
+                if (!groupedDiet[section]) {
+                    groupedDiet[section] = [];
+                }
+                groupedDiet[section].push(item);
+            });
+
+            let currentIndex = 0;
+            for (const section in groupedDiet) {
+                const items = groupedDiet[section];
+                const table = createSectionTable(section, items, user, day, currentIndex);
+                container.appendChild(table);
+
+                items.forEach(item => {
+                    const foodData = foods[item.food];
+                    const grams = item.units !== undefined ? (item.food === "copa_vino_125g" ? item.units * 125 : item.units * 330) : item.grams;
+                    totalCalories += (foodData.kcal * grams / 100);
+                    totalProtein += (foodData.protein * grams / 100);
+                    totalCarbs += (foodData.carbs * grams / 100);
+                    totalFat += (foodData.fat * grams / 100);
+                    totalFiber += (foodData.fiber * grams / 100);
+                });
+
+                currentIndex += items.length;
+            }
+
+            document.getElementById("totalCalories").textContent = totalCalories.toFixed(1);
+            document.getElementById("totalProtein").textContent = totalProtein.toFixed(1);
+            document.getElementById("totalCarbs").textContent = totalCarbs.toFixed(1);
+            document.getElementById("totalFat").textContent = totalFat.toFixed(1);
+            document.getElementById("totalFiber").textContent = totalFiber.toFixed(1);
+
+            const activityCalories = calculateActivityCalories(user);
+            document.getElementById("activityCalories").textContent = `Calorías quemadas por actividad: ${activityCalories} kcal`;
+
+            const tdee = calculateTDEE(user, day);
+            const totalExpenditure = tdee + parseFloat(activityCalories);
+            const deficit = (totalExpenditure - totalCalories).toFixed(2);
+            document.getElementById("deficitInfo").textContent = `Déficit calórico: ${deficit} kcal (TDEE: ${tdee} kcal + Actividad: ${activityCalories} kcal) - ${estimateWeightLoss(parseFloat(deficit))}`;
+        }
+
+        window.onload = function() {
+            updateDiet();
+            // Initialize theme toggle icon
+            const themeToggle = document.querySelector('.theme-toggle i');
+            if (document.body.classList.contains("dark-mode")) {
+                themeToggle.classList.remove("fa-moon");
+                themeToggle.classList.add("fa-sun");
+            }
+        };
+    </script>
+</body>
+</html>
