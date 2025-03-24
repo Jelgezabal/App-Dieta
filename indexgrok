@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>CalcDieta</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; transition: background .3s, color .3s; min-height: 100vh; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; }
+        body.d { background: #1a1a1a; color: #e0e0e0; }
+        .t { position: fixed; top: 10px; right: 10px; width: 25px; height: 25px; border-radius: 50%; background: #FFD700; border: none; cursor: pointer; transition: background .3s; }
+        .d .t { background: #B0BEC5; }
+        .c { overflow-x: auto; margin-top: 5px; width: 100%; }
+        table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 0 8px rgba(0,0,0,.1); margin-bottom: 15px; }
+        body.d table { background: #2a2a2a; box-shadow: 0 0 8px rgba(255,255,255,.1); }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+        body.d th, body.d td { border-bottom: 1px solid #444; }
+        th { background: #4CAF50; color: #fff; font-size: 12px; }
+        body.d th { background: #2E7D32; }
+        td { font-size: 12px; }
+        body.d td { color: #e0e0e0; }
+        input[type="tel"] { width: 50px; padding: 4px; font-size: 12px; }
+        .to { font-weight: 700; background: #e0e0e0; }
+        body.d .to { background: #3a3a3a; }
+        .st { font-weight: 700; background: #f0f8ff; }
+        body.d .st { background: #3a4a5a; }
+        .sh { background: #d3d3d3; font-weight: 700; font-size: 14px; padding: 8px; text-align: center; }
+        body.d .sh { background: #444; }
+        .df { margin-top: 5px; padding: 8px; background: #ffeb3b; border-radius: 5px; text-align: center; font-size: 14px; }
+        body.d .df { background: #d4a017; color: #1a1a1a; }
+        .sm { margin-top: 15px; padding: 10px; background: #fff; border-radius: 5px; box-shadow: 0 0 8px rgba(0,0,0,.1); }
+        body.d .sm { background: #2a2a2a; box-shadow: 0 0 8px rgba(255,255,255,.1); }
+        .sm p { margin: 8px 0; font-size: 12px; line-height: 1.4; }
+        body.d .sm p { color: #e0e0e0; }
+        .sm strong { color: #4CAF50; }
+        body.d .sm strong { color: #66bb6a; }
+        @media (max-width: 768px) {
+            body { padding: 5px; }
+            .c { overflow-x: hidden; }
+            table { width: 100%; min-width: 0; }
+            th, td { padding: 6px; font-size: 10px; }
+            th:nth-child(1), td:nth-child(1) { min-width: 80px; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            th:nth-child(2), td:nth-child(2) { min-width: 60px; max-width: 60px; }
+            th:nth-child(3), td:nth-child(3) { min-width: 50px; max-width: 50px; }
+            th:nth-child(4), td:nth-child(4) { min-width: 50px; max-width: 50px; }
+            th:nth-child(5), td:nth-child(5) { min-width: 50px; max-width: 50px; }
+            th:nth-child(6), td:nth-child(6) { min-width: 40px; max-width: 40px; }
+            th:nth-child(7), td:nth-child(7) { min-width: 40px; max-width: 40px; }
+            input[type="tel"] { width: 40px; font-size: 10px; }
+            .df, .sm p { font-size: 12px; }
+        }
+        @media (max-width: 480px) {
+            th, td { padding: 4px; font-size: 9px; }
+            th:nth-child(1), td:nth-child(1) { min-width: 70px; max-width: 70px; }
+            th:nth-child(2), td:nth-child(2) { min-width: 50px; max-width: 50px; }
+            th:nth-child(3), td:nth-child(3) { min-width: 45px; max-width: 45px; }
+            th:nth-child(4), td:nth-child(4) { min-width: 45px; max-width: 45px; }
+            th:nth-child(5), td:nth-child(5) { min-width: 45px; max-width: 45px; }
+            th:nth-child(6), td:nth-child(6) { min-width: 35px; max-width: 35px; }
+            th:nth-child(7), td:nth-child(7) { min-width: 35px; max-width: 35px; }
+            input[type="tel"] { width: 35px; font-size: 9px; }
+            .df, .sm p { font-size: 11px; }
+        }
+    </style>
+</head>
+<body class="d">
+    <!-- Botón Modo Oscuro -->
+    <button class="t" onclick="tT()"></button>
+
+    <!-- Menú de Navegación -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-white text-xl font-bold">CalcDieta</h1>
+            <div class="space-x-4">
+                <button class="text-white" onclick="showSection('profile')">Perfil</button>
+                <button class="text-white" onclick="showSection('diet')">Dieta</button>
+                <button class="text-white" onclick="showSection('addFood')">Añadir Alimento</button>
+                <button class="text-white" onclick="showSection('progress')">Progreso</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sección Perfil -->
+    <div id="profile" class="container mx-auto p-4 hidden">
+        <h2 class="text-2xl font-bold mb-4">Perfil</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="pWeight" class="block text-sm font-medium">Peso (kg):</label>
+                <input type="number" id="pWeight" step="0.1" class="border rounded p-2 w-full">
+            </div>
+            <div>
+                <label for="pHeight" class="block text-sm font-medium">Altura (cm):</label>
+                <input type="number" id="pHeight" class="border rounded p-2 w-full">
+            </div>
+            <div>
+                <label for="pAge" class="block text-sm font-medium">Edad:</label>
+                <input type="number" id="pAge" class="border rounded p-2 w-full">
+            </div>
+            <div>
+                <label for="pGender" class="block text-sm font-medium">Género:</label>
+                <select id="pGender" class="border rounded p-2 w-full">
+                    <option value="male">Hombre</option>
+                    <option value="female">Mujer</option>
+                </select>
+            </div>
+            <div>
+                <label for="pActivity" class="block text-sm font-medium">Nivel de Actividad:</label>
+                <select id="pActivity" class="border rounded p-2 w-full">
+                    <option value="1.2">Sedentario</option>
+                    <option value="1.375">Ligero</option>
+                    <option value="1.55">Moderado</option>
+                    <option value="1.725">Activo</option>
+                    <option value="1.9">Muy Activo</option>
+                </select>
+            </div>
+        </div>
+        <button class="mt-4 bg-green-500 text-white p-2 rounded" onclick="saveProfile()">Guardar Perfil</button>
+    </div>
+
+    <!-- Sección Dieta -->
+    <div id="diet" class="container mx-auto p-4">
+        <h2 class="text-2xl font-bold mb-4">Dieta</h2>
+        <div class="flex flex-col md:flex-row justify-center gap-4 mb-4">
+            <div>
+                <label for="u" class="block text-sm font-medium">Usuario:</label>
+                <select id="u" onchange="uD()" class="border rounded p-2">
+                    <option value="custom">Personalizado</option>
+                    <option value="j">Jon</option>
+                    <option value="a">Ainhoa</option>
+                </select>
+            </div>
+            <div>
+                <label for="d" class="block text-sm font-medium">Día:</label>
+                <select id="d" onchange="uD()" class="border rounded p-2">
+                    <option value="t">Entrenamiento</option>
+                    <option value="mw">Lun-Mie</option>
+                    <option value="th">Jue</option>
+                    <option value="sa">Sab</option>
+                    <option value="su">Dom</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Formulario para Añadir Comida -->
+        <div class="mb-4 p-4 bg-gray-100 rounded">
+            <h3 class="text-lg font-semibold mb-2">Añadir Comida</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="newSection" class="block text-sm font-medium">Sección:</label>
+                    <select id="newSection" class="border rounded p-2 w-full">
+                        <option value="D">Desayuno</option>
+                        <option value="Pr">Pre-entreno</option>
+                        <option value="I">Intra-entreno</option>
+                        <option value="Po">Post-entreno</option>
+                        <option value="C">Comida</option>
+                        <option value="M">Merienda</option>
+                        <option value="Ce">Cena</option>
+                        <option value="Pc">Pre-cama</option>
+                        <option value="O">Otros</option>
+                        <option value="S">Snack</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="newFood" class="block text-sm font-medium">Alimento:</label>
+                    <select id="newFood" class="border rounded p-2 w-full"></select>
+                </div>
+                <div>
+                    <label for="newQuantity" class="block text-sm font-medium">Cantidad (g):</label>
+                    <input type="number" id="newQuantity" class="border rounded p-2 w-full">
+                </div>
+            </div>
+            <button class="mt-4 bg-blue-500 text-white p-2 rounded" onclick="addFoodToDiet()">Añadir a la Dieta</button>
+        </div>
+
+        <!-- Tablas de Comidas -->
+        <div class="c" id="dt"></div>
+        <div class="c">
+            <table>
+                <thead>
+                    <tr><th colspan="5">Totales</th></tr>
+                    <tr><th>Kcal</th><th>Prot</th><th>Hid</th><th>Grasa</th><th>Fibra</th></tr>
+                </thead>
+                <tbody>
+                    <tr class="to">
+                        <td id="tk">0</td>
+                        <td id="tp">0</td>
+                        <td id="tc">0</td>
+                        <td id="tf">0</td>
+                        <td id="tfi">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="df" id="di"></div>
+        <div class="sm" id="si">
+            <p><strong>Kcal:</strong> Energía total. Déficit calórico clave para perder peso. TDEE varía por día/usuario.</p>
+            <p><strong>Prot:</strong> Reparación muscular. 1.6-2.2 g/kg para días de entreno.</p>
+            <p><strong>Hid:</strong> Energía. Prioriza fibra para saciedad.</p>
+            <p><strong>Grasa:</strong> Salud hormonal. 0.8-1 g/kg, grasas saludables.</p>
+            <p><strong>Fibra:</strong> Saciedad, digestión. 25-30 g/día mujeres, 30-38 g/día hombres.</p>
+        </div>
+        <div class="a p-4 bg-white rounded shadow">
+            <h3 class="text-lg font-semibold mb-2">Actividades</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="w1d" class="block text-sm font-medium">Caminata 1 - Km:</label>
+                    <input type="tel" id="w1d" value="0" step="0.1" pattern="[0-9]*" inputmode="numeric" onchange="uD()" class="border rounded p-2 w-full">
+                    <label for="w1t" class="block text-sm font-medium mt-2">o Min:</label>
+                    <input type="tel" id="w1t" value="0" step="1" pattern="[0-9]*" inputmode="numeric" onchange="uD()" class="border rounded p-2 w-full">
+                </div>
+                <div>
+                    <label for="w2d" class="block text-sm font-medium">Caminata 2 - Km:</label>
+                    <input type="tel" id="w2d" value="0" step="0.1" pattern="[0-9]*" inputmode="numeric" onchange="uD()" class="border rounded p-2 w-full">
+                    <label for="w2t" class="block text-sm font-medium mt-2">o Min:</label>
+                    <input type="tel" id="w2t" value="0" step="1" pattern="[0-9]*" inputmode="numeric" onchange="uD()" class="border rounded p-2 w-full">
+                </div>
+                <div>
+                    <label for="gt" class="block text-sm font-medium">Gym (min):</label>
+                    <input type="tel" id="gt" value="0" step="1" pattern="[0-9]*" inputmode="numeric" onchange="uD()" class="border rounded p-2 w-full">
+                </div>
+            </div>
+            <p id="ac" class="mt-2">Calorías actividad: 0 kcal</p>
+        </div>
+    </div>
+
+    <!-- Sección Añadir Alimento -->
+    <div id="addFood" class="container mx-auto p-4 hidden">
+        <h2 class="text-2xl font-bold mb-4">Añadir Alimento</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="foodId" class="block text-sm font-medium">ID (único):</label>
+                <input type="text" id="foodId" class="border rounded p-2 w-full">
+            </div>
+            <div>
+                <label for="foodName" class="block text-sm font-medium">Nombre:</label>
+                <input type="text" id="foodName" class="border rounded p-2 w-full">
+            </div>
+            <div>
+                <label for="foodKcal" class="block text-sm font-medium">Kcal (por 100g):</label>
+                <input type="number" id="foodKcal" class="border rounded p-2 w-full">
+            </div>
+            <div>
+                <label for="foodProt" class="block text-sm font-medium">Proteínas (g):</label>
+                <input type="number" id="foodProt" step="0.1" class="border rounded p-2 w-full">
+            </div>
+            <div>
+                <label for="foodCarbs" class="block text-sm font-medium">Hidratos (g):</label>
+                <input type="number" id="foodCarbs" step="0.1" class="border rounded p-2 w-full">
+            </div>
+            <div>
+                <label for="foodFat" class="block text-sm font-medium">Grasas (g):</label>
+                <input type="number" id="foodFat" step="0.1" class="border rounded p-2 w-full">
+            </div>
+            <div>
+                <label for="foodFiber" class="block text-sm font-medium">Fibra (g):</label>
+                <input type="number" id="foodFiber" step="0.1" class="border rounded p-2 w-full">
+            </div>
+        </div>
+        <button class="mt-4 bg-purple-500 text-white p-2 rounded" onclick="addNewFood()">Añadir Alimento</button>
+    </div>
+
+    <!-- Sección Progreso -->
+    <div id="progress" class="container mx-auto p-4 hidden">
+        <h2 class="text-2xl font-bold mb-4">Progreso</h2>
+        <div class="mb-4">
+            <label for="weightLog" class="block text-sm font-medium">Registrar Peso (kg):</label>
+            <input type="number" id="weightLog" step="0.1" class="border rounded p-2 w-full">
+            <button class="mt-2 bg-teal-500 text-white p-2 rounded" onclick="logWeight()">Registrar</button>
+        </div>
+        <canvas id="weightChart" class="w-full h-64"></canvas>
+    </div>
+
+    <script>
+        // Datos de Alimentos (f)
+        let f = JSON.parse(localStorage.getItem('foods')) || {
+            ch: { k: 33, p: 11, c: 0.4, f: 0, fi: 0 },
+            hc: { k: 143, p: 12.7, c: 1.1, f: 9.5, fi: 0 },
+            ha: { k: 390, p: 13, c: 68, f: 7, fi: 9 },
+            fr: { k: 32, p: 0.7, c: 7.7, f: 0.3, fi: 2 },
+            ag: { k: 160, p: 2, c: 8.5, f: 14.7, fi: 6.7 },
+            po: { k: 165, p: 31, c: 0, f: 3.5, fi: 0 },
+            ab: { k: 130, p: 2.7, c: 28.1, f: 0.3, fi: 0.4 },
+            ao: { k: 900, p: 0, c: 0, f: 100, fi: 0 },
+            br: { k: 35, p: 2.5, c: 7.1, f: 0.4, fi: 3.3 },
+            wh: { k: 370, p: 90, c: 2, f: 1, fi: 0 },
+            sa: { k: 206, p: 22, c: 0, f: 13, fi: 0 },
+            es: { k: 23, p: 2.9, c: 3.6, f: 0.4, fi: 2.2 },
+            pa: { k: 77, p: 2.5, c: 17, f: 0.1, fi: 2.2 },
+            ca: { k: 360, p: 80, c: 5, f: 2.5, fi: 0 },
+            pi: { k: 246, p: 9, c: 42, f: 3, fi: 6 },
+            pi32: { k: 246.875, p: 8.75, c: 40.625, f: 3.75, fi: 7.5 },
+            pfs: { k: 395.833, p: 12.5, c: 60.417, f: 7.292, fi: 23.958 },
+            al: { k: 600, p: 21, c: 21, f: 50, fi: 13 },
+            nu: { k: 654, p: 15.2, c: 13.7, f: 65, fi: 6.7 },
+            ea: { k: 400, p: 90, c: 0, f: 0, fi: 0 },
+            dx: { k: 400, p: 0, c: 100, f: 0, fi: 0 },
+            cr: { k: 0, p: 0, c: 0, f: 0, fi: 0 },
+            cf: { k: 275, p: 0, c: 0, f: 0, fi: 0 },
+            va: { k: 131, p: 21, c: 0, f: 5, fi: 0 },
+            et: { k: 250, p: 25, c: 0, f: 16, fi: 0 },
+            eg: { k: 43.41, p: 0.95, c: 4.73, f: 2.61, fi: 1.36 },
+            ta: { k: 287, p: 15, c: 40, f: 6, fi: 5.4 },
+            pc: { k: 79, p: 16, c: 1.8, f: 0.9, fi: 0 },
+            qc: { k: 267, p: 27, c: 0, f: 17, fi: 0 },
+            cv: { k: 68, p: 0, c: 2.6, f: 0, fi: 0 },
+            cb: { k: 33.636, p: 0, c: 0.085, f: 0, fi: 0 },
+            pl: { k: 0, p: 0, c: 0, f: 0, fi: 0 },
+            pe: { k: 220, p: 4, c: 50, f: 0, fi: 0 },
+            chb: { k: 240, p: 19.17, c: 0.5, f: 18.33, fi: 0 }
+        };
+
+        // Datos de Dietas (d)
+        let d = JSON.parse(localStorage.getItem('diets')) || {
+            j: {
+                t: [{ m: "D", f: "ch", g: 200 }, { m: "D", f: "hc", g: 60 }, { m: "D", f: "ha", g: 20 }, { m: "D", f: "fr", g: 0 }, { m: "D", f: "ag", g: 50 }, { m: "D", f: "nu", g: 15 }, { m: "D", f: "pi32", g: 0 }, { m: "Pr", f: "pl", g: 1 }, { m: "Pr", f: "pe", g: 30 }, { m: "Pr", f: "ea", g: 20 }, { m: "Pr", f: "dx", g: 5 }, { m: "Pr", f: "cf", g: 4 }, { m: "I", f: "ea", g: 20 }, { m: "I", f: "dx", g: 20 }, { m: "Po", f: "ea", g: 10 }, { m: "Po", f: "dx", g: 20 }, { m: "C", f: "po", g: 80 }, { m: "C", f: "ab", g: 80 }, { m: "C", f: "ao", g: 5 }, { m: "C", f: "br", g: 100 }, { m: "C", f: "pfs", g: 9.6 }, { m: "C", f: "hc", g: 60 }, { m: "M", f: "wh", g: 20 }, { m: "M", f: "fr", g: 0 }, { m: "Ce", f: "eg", g: 205 }, { m: "Ce", f: "ta", g: 63 }, { m: "Ce", f: "pc", g: 22 }, { m: "Ce", f: "qc", g: 51 }, { m: "Ce", f: "hc", g: 60 }, { m: "Ce", f: "ao", g: 1 }, { m: "Pc", f: "ca", g: 30 }, { m: "O", f: "cv", u: 2 }, { m: "O", f: "cb", u: 0 }],
+                mw: [{ m: "D", f: "ch", g: 200 }, { m: "D", f: "hc", g: 60 }, { m: "D", f: "ha", g: 20 }, { m: "D", f: "fr", g: 0 }, { m: "D", f: "ag", g: 50 }, { m: "D", f: "nu", g: 15 }, { m: "D", f: "pi32", g: 0 }, { m: "Pr", f: "pl", g: 1 }, { m: "Pr", f: "pe", g: 30 }, { m: "Pr", f: "ea", g: 20 }, { m: "Pr", f: "dx", g: 5 }, { m: "Pr", f: "cf", g: 4 }, { m: "I", f: "ea", g: 20 }, { m: "I", f: "dx", g: 20 }, { m: "Po", f: "ea", g: 10 }, { m: "Po", f: "dx", g: 20 }, { m: "C", f: "po", g: 80 }, { m: "C", f: "ab", g: 80 }, { m: "C", f: "ao", g: 5 }, { m: "C", f: "br", g: 100 }, { m: "C", f: "pfs", g: 9.6 }, { m: "C", f: "hc", g: 60 }, { m: "M", f: "wh", g: 20 }, { m: "M", f: "fr", g: 0 }, { m: "Ce", f: "eg", g: 205 }, { m: "Ce", f: "pa", g: 200 }, { m: "Ce", f: "qc", g: 51 }, { m: "Ce", f: "chb", g: 120 }, { m: "Pc", f: "ca", g: 30 }, { m: "O", f: "cv", u: 2 }, { m: "O", f: "cb", u: 0 }],
+                th: [{ m: "D", f: "ch", g: 100 }, { m: "D", f: "hc", g: 60 }, { m: "D", f: "ha", g: 20 }, { m: "D", f: "fr", g: 0 }, { m: "D", f: "ag", g: 50 }, { m: "D", f: "nu", g: 15 }, { m: "D", f: "cr", g: 5 }, { m: "D", f: "cf", g: 1 }, { m: "D", f: "ca", g: 30 }, { m: "D", f: "pi32", g: 0 }, { m: "C", f: "po", g: 60 }, { m: "C", f: "ab", g: 60 }, { m: "C", f: "ao", g: 7 }, { m: "C", f: "br", g: 100 }, { m: "C", f: "pfs", g: 9.6 }, { m: "C", f: "hc", g: 60 }, { m: "M", f: "ca", g: 30 }, { m: "Ce", f: "eg", g: 205 }, { m: "Ce", f: "ta", g: 63 }, { m: "Ce", f: "pc", g: 22 }, { m: "Ce", f: "qc", g: 51 }, { m: "Ce", f: "hc", g: 60 }, { m: "Ce", f: "ao", g: 1 }, { m: "Pc", f: "ca", g: 30 }, { m: "O", f: "cv", u: 2 }, { m: "O", f: "cb", u: 0 }],
+                sa: [{ m: "D", f: "ch", g: 100 }, { m: "D", f: "hc", g: 60 }, { m: "D", f: "ha", g: 20 }, { m: "D", f: "fr", g: 0 }, { m: "D", f: "ag", g: 50 }, { m: "D", f: "nu", g: 15 }, { m: "D", f: "cr", g: 5 }, { m: "D", f: "cf", g: 1 }, { m: "D", f: "ca", g: 30 }, { m: "D", f: "pi32", g: 0 }, { m: "C", f: "et", g: 100 }, { m: "C", f: "pa", g: 200 }, { m: "C", f: "ao", g: 1 }, { m: "C", f: "hc", g: 60 }, { m: "M", f: "ca", g: 30 }, { m: "Ce", f: "eg", g: 205 }, { m: "Ce", f: "ta", g: 63 }, { m: "Ce", f: "pc", g: 22 }, { m: "Ce", f: "qc", g: 51 }, { m: "Ce", f: "hc", g: 60 }, { m: "Ce", f: "ao", g: 1 }, { m: "Pc", f: "ca", g: 30 }, { m: "O", f: "cv", u: 2 }, { m: "O", f: "cb", u: 0 }],
+                su: [{ m: "D", f: "ch", g: 100 }, { m: "D", f: "hc", g: 60 }, { m: "D", f: "ha", g: 20 }, { m: "D", f: "fr", g: 0 }, { m: "D", f: "ag", g: 50 }, { m: "D", f: "nu", g: 15 }, { m: "D", f: "cr", g: 5 }, { m: "D", f: "cf", g: 1 }, { m: "D", f: "ca", g: 30 }, { m: "D", f: "pi32", g: 0 }, { m: "C", f: "et", g: 100 }, { m: "C", f: "pa", g: 200 }, { m: "C", f: "ao", g: 1 }, { m: "C", f: "hc", g: 60 }, { m: "M", f: "ca", g: 30 }, { m: "Ce", f: "eg", g: 205 }, { m: "Ce", f: "ta", g: 63 }, { m: "Ce", f: "pc", g: 22 }, { m: "Ce", f: "qc", g: 51 }, { m: "Ce", f: "hc", g: 60 }, { m: "Ce", f: "ao", g: 1 }, { m: "Pc", f: "ca", g: 30 }, { m: "O", f: "cv", u: 2 }, { m: "O", f: "cb", u: 0 }]
+            },
+            a: {
+                t: [{ m: "D", f: "ch", g: 200 }, { m: "D", f: "hc", g: 60 }, { m: "D", f: "ha", g: 30 }, { m: "D", f: "fr", g: 0 }, { m: "D", f: "ag", g: 50 }, { m: "D", f: "nu", g: 15 }, { m: "D", f: "pi32", g: 0 }, { m: "Pr", f: "pl", g: 1 }, { m: "Pr", f: "pe", g: 30 }, { m: "Pr", f: "ea", g: 20 }, { m: "Pr", f: "dx", g: 5 }, { m: "Pr", f: "cf", g: 4 }, { m: "Po", f: "ea", g: 20 }, { m: "Po", f: "dx", g: 5 }, { m: "Po", f: "cr", g: 5 }, { m: "C", f: "po", g: 60 }, { m: "C", f: "ab", g: 80 }, { m: "C", f: "ao", g: 10 }, { m: "C", f: "br", g: 100 }, { m: "C", f: "pfs", g: 9.6 }, { m: "C", f: "hc", g: 60 }, { m: "M", f: "wh", g: 20 }, { m: "M", f: "fr", g: 0 }, { m: "Ce", f: "sa", g: 80 }, { m: "Ce", f: "pa", g: 80 }, { m: "Ce", f: "es", g: 100 }, { m: "Ce", f: "ao", g: 7 }, { m: "Pc", f: "ca", g: 30 }, { m: "O", f: "cv", u: 0 }, { m: "S", f: "pi", g: 0 }, { m: "S", f: "al", g: 0 }],
+                mw: [{ m: "D", f: "ch", g: 200 }, { m: "D", f: "hc", g: 60 }, { m: "D", f: "ha", g: 30 }, { m: "D", f: "fr", g: 0 }, { m: "D", f: "ag", g: 50 }, { m: "D", f: "nu", g: 15 }, { m: "D", f: "pi32", g: 0 }, { m: "Pr", f: "pl", g: 1 }, { m: "Pr", f: "pe", g: 30 }, { m: "Pr", f: "ea", g: 20 }, { m: "Pr", f: "dx", g: 5 }, { m: "Pr", f: "cf", g: 4 }, { m: "Po", f: "ea", g: 20 }, { m: "Po", f: "dx", g: 5 }, { m: "Po", f: "cr", g: 5 }, { m: "C", f: "po", g: 60 }, { m: "C", f: "ab", g: 80 }, { m: "C", f: "ao", g: 10 }, { m: "C", f: "br", g: 100 }, { m: "C", f: "pfs", g: 9.6 }, { m: "C", f: "hc", g: 60 }, { m: "M", f: "wh", g: 20 }, { m: "M", f: "fr", g: 0 }, { m: "Ce", f: "eg", g: 205 }, { m: "Ce", f: "pa", g: 200 }, { m: "Ce", f: "qc", g: 51 }, { m: "Ce", f: "chb", g: 120 }, { m: "Pc", f: "ca", g: 30 }, { m: "O", f: "cv", u: 0 }, { m: "S", f: "pi", g: 0 }, { m: "S", f: "al", g: 0 }],
+                th: [{ m: "D", f: "ch", g: 100 }, { m: "D", f: "hc", g: 60 }, { m: "D", f: "ha", g: 20 }, { m: "D", f: "fr", g: 0 }, { m: "D", f: "ag", g: 35 }, { m: "D", f: "nu", g: 15 }, { m: "D", f: "cr", g: 5 }, { m: "D", f: "cf", g: 1 }, { m: "D", f: "pi32", g: 0 }, { m: "C", f: "po", g: 60 }, { m: "C", f: "ab", g: 60 }, { m: "C", f: "ao", g: 7 }, { m: "C", f: "br", g: 100 }, { m: "C", f: "pfs", g: 9.6 }, { m: "C", f: "hc", g: 60 }, { m: "M", f: "wh", g: 20 }, { m: "Ce", f: "sa", g: 80 }, { m: "Ce", f: "es", g: 100 }, { m: "Ce", f: "ao", g: 7 }, { m: "Pc", f: "ca", g: 30 }, { m: "O", f: "cv", u: 0 }, { m: "S", f: "pi", g: 0 }, { m: "S", f: "al", g: 0 }],
+                sa: [{ m: "D", f: "ch", g: 100 }, { m: "D", f: "hc", g: 60 }, { m: "D", f: "ha", g: 20 }, { m: "D", f: "fr", g: 0 }, { m: "D", f: "ag", g: 35 }, { m: "D", f: "nu", g: 15 }, { m: "D", f: "cr", g: 5 }, { m: "D", f: "cf", g: 1 }, { m: "D", f: "pi32", g: 0 }, { m: "C", f: "et", g: 100 }, { m: "C", f: "pa", g: 200 }, { m: "C", f: "ao", g: 1 }, { m: "C", f: "hc", g: 60 }, { m: "M", f: "wh", g: 20 }, { m: "Ce", f: "sa", g: 80 }, { m: "Ce", f: "es", g: 100 }, { m: "Ce", f: "ao", g: 7 }, { m: "Pc", f: "ca", g: 30 }, { m: "O", f: "cv", u: 0 }, { m: "S", f: "pi", g: 0 }, { m: "S", f: "al", g: 0 }],
+                su: [{ m: "D", f: "ch", g: 100 }, { m: "D", f: "hc", g: 60 }, { m: "D", f: "ha", g: 20 }, { m: "D", f: "fr", g: 0 }, { m: "D", f: "ag", g: 35 }, { m: "D", f: "nu", g: 15 }, { m: "D", f: "cr", g: 5 }, { m: "D", f: "cf", g: 1 }, { m: "D", f: "pi32", g: 0 }, { m: "C", f: "et", g: 100 }, { m: "C", f: "pa", g: 200 }, { m: "C", f: "ao", g: 1 }, { m: "C", f: "hc", g: 60 }, { m: "M", f: "wh", g: 20 }, { m: "Ce", f: "sa", g: 80 }, { m: "Ce", f: "es", g: 100 }, { m: "Ce", f: "ao", g: 7 }, { m: "Pc", f: "ca", g: 30 }, { m: "O", f: "cv", u: 0 }, { m: "S", f: "pi", g: 0 }, { m: "S", f: "al", g: 0 }]
+            },
+            custom: { t: [], mw: [], th: [], sa: [], su: [] }
+        };
+
+        // Perfil del Usuario
+        let profile = JSON.parse(localStorage.getItem('profile')) || {
+            weight: 70,
+            height: 170,
+            age: 30,
+            gender: 'male',
+            activity: 1.55
+        };
+
+        // Registro de Peso
+        let weightLog = JSON.parse(localStorage.getItem('weightLog')) || [];
+
+        // Funciones de Navegación
+        function showSection(sectionId) {
+            document.getElementById('profile').classList.add('hidden');
+            document.getElementById('diet').classList.add('hidden');
+            document.getElementById('addFood').classList.add('hidden');
+            document.getElementById('progress').classList.add('hidden');
+            document.getElementById(sectionId).classList.remove('hidden');
+            if (sectionId === 'progress') updateWeightChart();
+        }
+
+        // Guardar Perfil
+        function saveProfile() {
+            profile.weight = parseFloat(document.getElementById('pWeight').value) || 70;
+            profile.height = parseFloat(document.getElementById('pHeight').value) || 170;
+            profile.age = parseFloat(document.getElementById('pAge').value) || 30;
+            profile.gender = document.getElementById('pGender').value;
+            profile.activity = parseFloat(document.getElementById('pActivity').value);
+            localStorage.setItem('profile', JSON.stringify(profile));
+            alert('Perfil guardado');
+            uD();
+        }
+
+        // Añadir Alimento Nuevo
+        function addNewFood() {
+            const id = document.getElementById('foodId').value;
+            const name = document.getElementById('foodName').value;
+            const kcal = parseFloat(document.getElementById('foodKcal').value) || 0;
+            const prot = parseFloat(document.getElementById('foodProt').value) || 0;
+            const carbs = parseFloat(document.getElementById('foodCarbs').value) || 0;
+            const fat = parseFloat(document.getElementById('foodFat').value) || 0;
+            const fiber = parseFloat(document.getElementById('foodFiber').value) || 0;
+
+            if (!id || !name) {
+                alert('Por favor, ingresa un ID y un nombre para el alimento');
+                return;
+            }
+            if (f[id]) {
+                alert('El ID ya existe, elige otro');
+                return;
+            }
+
+            f[id] = { k: kcal, p: prot, c: carbs, f: fat, fi: fiber };
+            localStorage.setItem('foods', JSON.stringify(f));
+            updateFoodSelect();
+            alert('Alimento añadido');
+        }
+
+        // Actualizar Select de Alimentos
+        function updateFoodSelect() {
+            const foodSelect = document.getElementById('newFood');
+            foodSelect.innerHTML = '';
+            for (let foodId in f) {
+                const option = document.createElement('option');
+                option.value = foodId;
+                option.textContent = cW(foodId);
+                foodSelect.appendChild(option);
+            }
+        }
+
+        // Añadir Comida a la Dieta
+        function addFoodToDiet() {
+            const section = document.getElementById('newSection').value;
+            const food = document.getElementById('newFood').value;
+            const quantity = parseFloat(document.getElementById('newQuantity').value) || 0;
+            const user = document.getElementById('u').value;
+            const day = document.getElementById('d').value;
+
+            if (user !== 'custom') {
+                alert('Por favor, selecciona el usuario "Personalizado" para añadir comidas');
+                return;
+            }
+
+            d.custom[day].push({ m: section, f: food, g: quantity });
+            localStorage.setItem('diets', JSON.stringify(d));
+            uD();
+        }
+
+        // Registrar Peso
+        function logWeight() {
+            const weight = parseFloat(document.getElementById('weightLog').value);
+            if (!weight) return;
+            const date = new Date().toISOString().split('T')[0];
+            weightLog.push({ date, weight });
+            localStorage.setItem('weightLog', JSON.stringify(weightLog));
+            updateWeightChart();
+        }
+
+        // Actualizar Gráfico de Peso
+        let weightChart;
+        function updateWeightChart() {
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            if (weightChart) weightChart.destroy();
+
+            weightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: weightLog.map(entry => entry.date),
+                    datasets: [{
+                        label: 'Peso (kg)',
+                        data: weightLog.map(entry => entry.weight),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Fecha' } },
+                        y: { title: { display: true, text: 'Peso (kg)' } }
+                    }
+                }
+            });
+        }
+
+        // Funciones Existentes (Modificadas)
+        function tT() {
+            document.body.classList.toggle("d");
+        }
+
+        function cW(s) {
+            if (s === "cb") return "Cubata Ron Cola";
+            if (s === "hc") {
+                let u = document.getElementById("u").value, d = document.getElementById("d").value;
+                let i = d[u][d]?.find(e => e.f === "hc")?.m;
+                return i === "C" && (d === "sa" || d === "su" || d === "mw") ? "Huevo Frito Airfryer" : i === "C" && (d === "t" || d === "th") ? "Huevo Cocido" : "Huevo Completo";
+            }
+            if (s === "pl") return "Pastilla L-Carnitina";
+            return s.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+        }
+
+        function cA() {
+            let w = profile.weight, w1d = parseFloat(document.getElementById("w1d").value) || 0, w1t = parseFloat(document.getElementById("w1t").value) || 0, w2d = parseFloat(document.getElementById("w2d").value) || 0, w2t = parseFloat(document.getElementById("w2t").value) || 0, gt = parseFloat(document.getElementById("gt").value) || 0, wC = 0;
+            let kcalPerKm = profile.gender === 'male' ? 0.65 : 0.55;
+            let kcalPerMinGym = profile.gender === 'male' ? 8 : 6;
+            w1d > 0 ? wC += w1d * kcalPerKm * w : w1t > 0 && (wC += w1t * (profile.gender === 'male' ? 5 : 4));
+            w2d > 0 ? wC += w2d * kcalPerKm * w : w2t > 0 && (wC += w2t * (profile.gender === 'male' ? 5 : 4));
+            let gC = gt * kcalPerMinGym;
+            return (wC + gC).toFixed(1);
+        }
+
+        function cT(d) {
+            let w = profile.weight, h = profile.height, a = profile.age, af = (d === "t" || d === "mw") ? 1.725 : 1.55;
+            let b = profile.gender === 'male' ? 10 * w + 6.25 * h - 5 * a + 5 : 10 * w + 6.25 * h - 5 * a - 161;
+            return (b * (profile.activity || af)).toFixed(1);
+        }
+
+        function eW(df) {
+            let dL = (df / 7700) * 1000, wL = dL * 7;
+            return `Pérdida: ${dL.toFixed(1)} g/día (${wL.toFixed(1)} g/sem)`;
+        }
+
+        function cS(s, i, u, d, si) {
+            let t = document.createElement("table"), th = document.createElement("thead"), tb = document.createElement("tbody"), h1 = document.createElement("tr"), sh = document.createElement("th");
+            sh.colSpan = 7; sh.className = "sh"; sh.textContent = s; h1.appendChild(sh); th.appendChild(h1);
+            let h2 = document.createElement("tr");
+            ["Alimento", "Cant (g)", "Kcal", "Prot", "Hid", "Grasa", "Fibra"].forEach(x => {
+                let h = document.createElement("th"); h.textContent = x; h2.appendChild(h);
+            });
+            th.appendChild(h2);
+            let sC = 0, sP = 0, sH = 0, sF = 0, sFi = 0;
+            i.forEach((e, idx) => {
+                let r = document.createElement("tr"), fd = f[e.f], g = e.u !== undefined ? (e.f === "cv" ? e.u * 125 : e.u * 330) : e.g;
+                let c = [cW(e.f), e.u !== undefined ? `<input type="tel" value="${e.u}" onchange="d['${u}']['${d}'][${si + idx}].u=this.value;uD()">` : `<input type="tel" value="${e.g}" onchange="d['${u}']['${d}'][${si + idx}].g=this.value;uD()">`, (fd.k * g / 100).toFixed(1), (fd.p * g / 100).toFixed(1), (fd.c * g / 100).toFixed(1), (fd.f * g / 100).toFixed(1), (fd.fi * g / 100).toFixed(1)];
+                c.forEach(x => {
+                    let td = document.createElement("td"); td.innerHTML = x; r.appendChild(td);
+                });
+                sC += (fd.k * g / 100); sP += (fd.p * g / 100); sH += (fd.c * g / 100); sF += (fd.f * g / 100); sFi += (fd.fi * g / 100);
+                tb.appendChild(r);
+            });
+            let sr = document.createElement("tr"); sr.className = "st";
+            ["Subtotal", "", "", sC.toFixed(1), sP.toFixed(1), sH.toFixed(1), sF.toFixed(1), sFi.toFixed(1)].forEach(x => {
+                let td = document.createElement("td"); td.textContent = x; sr.appendChild(td);
+            });
+            tb.appendChild(sr); t.appendChild(th); t.appendChild(tb);
+            return t;
+        }
+
+        function uD() {
+            try {
+                let u = document.getElementById("u")?.value, d = document.getElementById("d")?.value;
+                if (!u || !d) return;
+                let dt = d[u][d], c = document.getElementById("dt");
+                if (!c) return;
+                c.innerHTML = "";
+                let gt = document.getElementById("gt");
+                if (gt) {
+                    if (d === "t" || d === "mw") gt.value = 45;
+                    else gt.value = 0;
+                }
+                let tC = 0, tP = 0, tH = 0, tF = 0, tFi = 0;
+                let s = (u === "j" && (d === "th" || d === "sa" || d === "su")) ? ["D", "C", "M", "Ce", "Pc", "O", "S"] : ((d === "t" || d === "mw") ? ["D", "Pr", "I", "Po", "C", "M", "Ce", "Pc", "O", "S"] : ["D", "C", "M", "Ce", "Pc", "O", "S"]);
+                let sg = (d === "t" || d === "mw") ? { D: "D", Pr: "P/I/Po", I: "P/I/Po", Po: "P/I/Po", C: "C", M: "M", Ce: "Ce", Pc: "Pc", O: "O", S: "S" } : { D: "D", C: "C", M: "M", Ce: "Ce", Pc: "Pc", O: "O", S: "S" };
+                let gd = {};
+                dt.forEach(e => {
+                    let s = sg[e.m] || e.m;
+                    if (!gd[s]) gd[s] = [];
+                    gd[s].push(e);
+                });
+                let ci = 0;
+                for (let s in gd) {
+                    let i = gd[s], t = cS(s, i, u, d, ci);
+                    c.appendChild(t);
+                    i.forEach(e => {
+                        let fd = f[e.f];
+                        if (!fd) return;
+                        let g = e.u !== undefined ? (e.f === "cv" ? e.u * 125 : e.u * 330) : e.g;
+                        tC += (fd.k * g / 100) || 0;
+                        tP += (fd.p * g / 100) || 0;
+                        tH += (fd.c * g / 100) || 0;
+                        tF += (fd.f * g / 100) || 0;
+                        tFi += (fd.fi * g / 100) || 0;
+                    });
+                    ci += i.length;
+                }
+                let tk = document.getElementById("tk"), tp = document.getElementById("tp"), tc = document.getElementById("tc"), tf = document.getElementById("tf"), tfi = document.getElementById("tfi");
+                if (tk) tk.textContent = tC.toFixed(1);
+                if (tp) tp.textContent = tP.toFixed(1);
+                if (tc) tc.textContent = tH.toFixed(1);
+                if (tf) tf.textContent = tF.toFixed(1);
+                if (tfi) tfi.textContent = tFi.toFixed(1);
+                let aC = cA() || 0, ac = document.getElementById("ac");
+                if (ac) ac.textContent = `Calorías actividad: ${aC} kcal`;
+                let tdee = cT(d) || 0, te = parseFloat(tdee) + parseFloat(aC), df = (te - tC).toFixed(2), di = document.getElementById("di");
+                if (di) di.textContent = `Déficit: ${df} kcal (TDEE: ${tdee} kcal + Act: ${aC} kcal) - ${eW(parseFloat(df))}`;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Inicialización
+        window.onload = function() {
+            document.getElementById('pWeight').value = profile.weight;
+            document.getElementById('pHeight').value = profile.height;
+            document.getElementById('pAge').value = profile.age;
+            document.getElementById('pGender').value = profile.gender;
+            document.getElementById('pActivity').value = profile.activity;
+            updateFoodSelect();
+            uD();
+        };
+    </script>
+</body>
+</html>
