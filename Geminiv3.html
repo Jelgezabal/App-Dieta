@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Dieta</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style>
+        :root {
+            --bg-color: #333;
+            --text-color: #f4f4f4;
+            --primary-color: #00bfff;
+            --secondary-color: #868e96;
+            --table-bg: #444;
+            --table-header-bg: #555;
+            --shadow-color: rgba(255, 255, 255, 0.1);
+            --transition-duration: 0.3s;
+        }
+
+        .light-mode {
+            --bg-color: #f4f4f4;
+            --text-color: #333;
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --table-bg: #fff;
+            --table-header-bg: #eee;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color var(--transition-duration), color var(--transition-duration);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        select, input[type="number"], input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: var(--table-bg);
+            color: var(--text-color);
+            transition: border-color var(--transition-duration);
+            font-family: 'Inter', sans-serif;
+        }
+
+        select:focus, input[type="number"]:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color var(--transition-duration);
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            margin-top: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .toggle-theme-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color var(--transition-duration);
+        }
+
+        .toggle-theme-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .meal-section {
+            margin-bottom: 20px;
+            background-color: var(--table-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            padding: 15px;
+            transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .meal-section h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--table-bg);
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            color: var(--text-color);
+            font-weight: 400;
+        }
+
+        th {
+            background-color: var(--table-header-bg);
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .total-row td {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .activity-log {
+            margin-top: 20px;
+            background-color: var(--table-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            padding: 15px;
+            transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .activity-log h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .activity-item label {
+            margin-bottom: 0;
+            color: var(--text-color);
+            font-weight: 500;
+            flex: 1 0 auto;
+            min-width: fit-content;
+        }
+
+        .activity-item input[type="number"], .activity-item input[type="text"], .activity-item select {
+            margin-bottom: 0;
+            width: calc(100% - 140px);
+            flex: 1 1 auto;
+            min-width: 100px;
+        }
+
+        .summary {
+            margin-top: 20px;
+            background-color: var(--table-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            padding: 15px;
+            transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .summary h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .recommendations {
+            margin-top: 20px;
+            background-color: var(--table-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            padding: 15px;
+            transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .recommendations h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        #food-select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: var(--table-bg);
+            color: var(--text-color);
+            transition: border-color var(--transition-duration);
+            font-family: 'Inter', sans-serif;
+        }
+
+        #food-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .activity-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .activity-item label {
+                margin-bottom: 5px;
+            }
+
+            .activity-item input[type="number"], .activity-item input[type="text"], .activity-item select {
+                width: 100%;
+                min-width: auto;
+            }
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="container">
+        <h1>Calculadora de Dieta</h1>
+
+        <button class="toggle-theme-btn" onclick="toggleTheme()">
+            <img id="theme-icon" src="https://unpkg.com/lucide-static@latest/icons/moon.svg" alt="Cambiar Tema" width="24" height="24">
+        </button>
+
+        <label for="user">Usuario:</label>
+        <select id="user" onchange="loadUserData()">
+            <option value="">Seleccionar Usuario</option>
+            <option value="jon">Jon</option>
+            <option value="ainhoa">Ainhoa</option>
+        </select>
+
+        <label for="day">Día:</label>
+        <select id="day">
+            <option value="entrenamiento">Entrenamiento</option>
+            <option value="lunes-miercoles">Lun-Mie</option>
+            <option value="jueves">Jue</option>
+            <option value="sabado">Sab</option>
+            <option value="domingo">Dom</option>
+        </select>
+
+        <div class="user-info">
+            <h2>Información del Usuario</h2>
+            <label for="weight">Peso (kg):</label>
+            <input type="number" id="weight" onchange="calculateTDEE()">
+
+            <label for="height">Altura (cm):</label>
+            <input type="number" id="height" onchange="calculateTDEE()">
+
+            <label for="age">Edad:</label>
+            <input type="number" id="age" onchange="calculateTDEE()">
+        </div>
+
+        <div class="meal-section">
+            <h3>Desayuno</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alimento</th>
+                        <th>Gramos</th>
+                        <th>Kcal</th>
+                        <th>Proteínas</th>
+                        <th>Hidratos</th>
+                        <th>Grasas</th>
+                        <th>Fibra</th>
+                    </tr>
+                </thead>
+                <tbody id="desayuno">
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td>Subtotal</td>
+                        <td></td>
+                        <td id="desayuno-kcal">0</td>
+                        <td id="desayuno-proteinas">0</td>
+                        <td id="desayuno-hidratos">0</td>
+                        <td id="desayuno-grasas">0</td>
+                        <td id="desayuno-fibra">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <button onclick="addFoodItem('desayuno')">Añadir Alimento</button>
+        </div>
+
+        <div class="meal-section">
+            <h3>Pre/Intra/Post-entreno</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alimento</th>
+                        <th>Gramos</th>
+                        <th>Kcal</th>
+                        <th>Proteínas</th>
+                        <th>Hidratos</th>
+                        <th>Grasas</th>
+                        <th>Fibra</th>
+                    </tr>
+                </thead>
+                <tbody id="pre-intra-post-entreno">
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td>Subtotal</td>
+                        <td></td>
+                        <td id="pre-intra-post-entreno-kcal">0</td>
+                        <td id="pre-intra-post-entreno-proteinas">0</td>
+                        <td id="pre-intra-post-entreno-hidratos">0</td>
+                        <td id="pre-intra-post-entreno-grasas">0</td>
+                        <td id="pre-intra-post-entreno-fibra">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <button onclick="addFoodItem('pre-intra-post-entreno')">Añadir Alimento</button>
+        </div>
+
+        <div class="meal-section">
+            <h3>Comida</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alimento</th>
+                        <th>Gramos</th>
+                        <th>Kcal</th>
+                        <th>Proteínas</th>
+                        <th>Hidratos</th>
+                        <th>Grasas</th>
+                        <th>Fibra</th>
+                    </tr>
+                </thead>
+                <tbody id="comida">
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td>Subtotal</td>
+                        <td></td>
+                        <td id="comida-kcal">0</td>
+                        <td id="comida-proteinas">0</td>
+                        <td id="comida-hidratos">0</td>
+                        <td id="comida-grasas">0</td>
+                        <td id="comida-fibra">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <button onclick="addFoodItem('comida')">Añadir Alimento</button>
+        </div>
+
+        <div class="meal-section">
+            <h3>Merienda</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alimento</th>
+                        <th>Gramos</th>
+                        <th>Kcal</th>
+                        <th>Proteínas</th>
+                        <th>Hidratos</th>
+                        <th>Grasas</th>
+                        <th>Fibra</th>
+                    </tr>
+                </thead>
+                <tbody id="merienda">
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td>Subtotal</td>
+                        <td></td>
+                        <td id="merienda-kcal">0</td>
+                        <td id="merienda-proteinas">0</td>
+                        <td id="merienda-hidratos">0</td>
+                        <td id="merienda-grasas">0</td>
+                        <td id="merienda-fibra">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <button onclick="addFoodItem('merienda')">Añadir Alimento</button>
+        </div>
+
+        <div class="meal-section">
+            <h3>Cena</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alimento</th>
+                        <th>Gramos</th>
+                        <th>Kcal</th>
+                        <th>Proteínas</th>
+                        <th>Hidratos</th>
+                        <th>Grasas</th>
+                        <th>Fibra</th>
+                    </tr>
+                </thead>
+                <tbody id="cena">
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td>Subtotal</td>
+                        <td></td>
+                        <td id="cena-kcal">0</td>
+                        <td id="cena-proteinas">0</td>
+                        <td id="cena-hidratos">0</td>
+                        <td id="cena-grasas">0</td>
+                        <td id="cena-fibra">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <button onclick="addFoodItem('cena')">Añadir Alimento</button>
+        </div>
+
+        <div class="meal-section">
+            <h3>Pre-cama</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alimento</th>
+                        <th>Gramos</th>
+                        <th>Kcal</th>
+                        <th>Proteínas</th>
+                        <th>Hidratos</th>
+                        <th>Grasas</th>
+                        <th>Fibra</th>
+                    </tr>
+                </thead>
+                <tbody id="pre-cama">
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td>Subtotal</td>
+                        <td></td>
+                        <td id="pre-cama-kcal">0</td>
+                        <td id="pre-cama-proteinas">0</td>
+                        <td id="pre-cama-hidratos">0</td>
+                        <td id="pre-cama-grasas">0</td>
+                        <td id="pre-cama-fibra">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <button onclick="addFoodItem('pre-cama')">Añadir Alimento</button>
+        </div>
+
+        <div class="meal-section">
+            <h3>Otros</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alimento</th>
+                        <th>Gramos</th>
+                        <th>Kcal</th>
+                        <th>Proteínas</th>
+                        <th>Hidratos</th>
+                        <th>Grasas</th>
+                        <th>Fibra</th>
+                    </tr>
+                </thead>
+                <tbody id="otros">
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td>Subtotal</td>
+                        <td></td>
+                        <td id="otros-kcal">0</td>
+                        <td id="otros-proteinas">0</td>
+                        <td id="otros-hidratos">0</td>
+                        <td id="otros-grasas">0</td>
+                        <td id="otros-fibra">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <button onclick="addFoodItem('otros')">Añadir Alimento</button>
+        </div>
+
+        <div class="meal-section">
+            <h3>Snack</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alimento</th>
+                        <th>Gramos</th>
+                        <th>Kcal</th>
+                        <th>Proteínas</th>
+                        <th>Hidratos</th>
+                        <th>Grasas</th>
+                        <th>Fibra</th>
+                    </tr>
+                </thead>
+                <tbody id="snack">
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td>Subtotal</td>
+                        <td></td>
+                        <td id="snack-kcal">0</td>
+                        <td id="snack-proteinas">0</td>
+                        <td id="snack-hidratos">0</td>
+                        <td id="snack-grasas">0</td>
+                        <td id="snack-fibra">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <button onclick="addFoodItem('snack')">Añadir Alimento</button>
+        </div>
+
+        <div class="activity-log">
+            <h3>Registro de Actividades</h3>
+            <div id="activities">
+                <div class="activity-item">
+                    <label for="caminata1_km">Caminata 1 (km o min):</label>
+                    <input type="number" id="caminata1_km" placeholder="km o min" onchange="calculateBurnedCalories()">
+                    <select id="caminata1_unit" onchange="calculateBurnedCalories()">
+                        <option value="km">km</option>
+                        <option value="min">min</option>
+                    </select>
+                </div>
+                <div class="activity-item">
+                    <label for="caminata2_km">Caminata 2 (km o min):</label>
+                    <input type="number" id="caminata2_km" placeholder="km o min" onchange="calculateBurnedCalories()">
+                    <select id="caminata2_unit" onchange="calculateBurnedCalories()">
+                        <option value="km">km</option>
+                        <option value="min">min</option>
+                    </select>
+                </div>
+                <div class="activity-item">
+                    <label for="gym_min">Gym (min):</label>
+                    <input type="number" id="gym_min" placeholder="min" onchange="calculateBurnedCalories()">
+                </div>
+            </div>
+            <p>Calorías Quemadas: <span id="burned-calories">0</span> kcal</p>
+        </div>
+
+        <div class="summary">
+            <h3>Resumen Nutricional</h3>
+            <table>
+                <tr>
+                    <th>Total Kcal</th>
+                    <td id="total-kcal">0</td>
+                </tr>
+                <tr>
+                    <th>Total Proteínas</th>
+                    <td id="total-proteinas">0</td>
+                </tr>
+                <tr>
+                    <th>Total Hidratos</th>
+                    <td id="total-hidratos">0</td>
+                </tr>
+                <tr>
+                    <th>Total Grasas</th>
+                    <td id="total-grasas">0</td>
+                </tr>
+                <tr>
+                    <th>Total Fibra</th>
+                    <td id="total-fibra">0</td>
+                </tr>
+            </table>
+            <h3>Cálculo de TDEE y Déficit Calórico</h3>
+            <p>TDEE: <span id="tdee">0</span> kcal</p>
+            <p>Déficit Calórico: <span id="deficit">0</span> kcal</p>
+            <p>Estimación de Pérdida de Peso: <span id="weight-loss-day">0</span> g/día, <span id="weight-loss-week">0</span> g/semana</p>
+        </div>
+
+        <div class="recommendations">
+            <h3>Recomendaciones Nutricionales</h3>
+            <p id="recommendation-text">Selecciona un usuario y añade alimentos para ver las recomendaciones.</p>
+        </div>
+    </div>
+
+    <script>
+        const predefinedFoods = {
+            'claras_huevo': { kcal: 33, protein: 11, carbs: 0.4, fat: 0, fiber: 0 },
+            'huevo_completo': { kcal: 143, protein: 12.7, carbs: 1.1, fat: 9.5, fiber: 0 },
+            'harina_avena': { kcal: 390, protein: 13, carbs: 68, fat: 7, fiber: 9 },
+            'fresas': { kcal: 32, protein: 0.7, carbs: 7.7, fat: 0.3, fiber: 2 },
+            'aguacate': { kcal: 160, protein: 2, carbs: 8.5, fat: 14.7, fiber: 6.7 },
+            'pollo': { kcal: 165, protein: 31, carbs: 0, fat: 3.5, fiber: 0 },
+            'arroz_blanco': { kcal: 130, protein: 2.7, carbs: 28.1, fat: 0.3, fiber: 0.4 },
+            'aceite_oliva': { kcal: 900, protein: 0, carbs: 0, fat: 100, fiber: 0 },
+            'brócoli': { kcal: 35, protein: 2.5, carbs: 7.1, fat: 0.4, fiber: 3.3 },
+            'whey': { kcal: 370, protein: 90, carbs: 2, fat: 1, fiber: 0 },
+            'salmón': { kcal: 206, protein: 22, carbs: 0, fat: 13, fiber: 0 },
+            'espinacas': { kcal: 23, protein: 2.9, carbs: 3.6, fat: 0.4, fiber: 2.2 },
+            'patata': { kcal: 77, protein: 2.5, carbs: 17, 
