@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Dieta</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .active {
+            display: block;
+        }
+        .hidden {
+            display: none;
+        }
+        .dark-mode {
+            background-color: #111827; /* Cambiado para que funcione con la clase .dark */
+            color: #f9fafb;
+        }
+        .dark-mode .bg-gray-100 {
+            background-color: #1f2937;
+        }
+        .dark-mode .text-gray-900 {
+            color: #f9fafb;
+        }
+        .dark-mode .border-gray-300 {
+            border-color: #4b5563;
+        }
+        .dark-mode .focus\:ring-blue-500:focus {
+            --tw-ring-color: #60a5fa;
+        }
+        .dark-mode .bg-emerald-500 {
+            background-color: #16a34a;
+        }
+        .dark-mode .hover\:bg-emerald-700:hover {
+             background-color: #15803d;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+    <header class="bg-white dark:bg-gray-800 shadow-md rounded-b-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Calculadora Dieta</h1>
+            <button id="theme-toggle" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-md transition-colors duration-200">
+                <span id="theme-toggle-icon">☀️</span>
+            </button>
+        </div>
+    </header>
+
+    <nav class="bg-gray-200 dark:bg-gray-800 rounded-md shadow-md mt-4 mx-auto container px-4 py-2">
+        <ul class="flex space-x-4 justify-center">
+            <li class="cursor-pointer text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200" data-section="perfil">Perfil</li>
+            <li class="cursor-pointer text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200" data-section="dieta">Dieta</li>
+            <li class="cursor-pointer text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200" data-section="alimento">Añadir Alimento</li>
+            <li class="cursor-pointer text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200" data-section="progreso">Progreso</li>
+        </ul>
+    </nav>
+
+    <main class="container mx-auto px-4 py-6">
+        <section id="perfil" class="section active bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mt-6">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Perfil</h2>
+            <form id="perfil-form" class="space-y-4">
+                <div>
+                    <label for="peso" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Peso (kg):</label>
+                    <input type="number" id="peso" name="peso" value="70" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="altura" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Altura (cm):</label>
+                    <input type="number" id="altura" name="altura" value="170" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="edad" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Edad:</label>
+                    <input type="number" id="edad" name="edad" value="30" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="genero" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Género:</label>
+                    <select id="genero" name="genero" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                        <option value="Hombre">Hombre</option>
+                        <option value="Mujer">Mujer</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="actividad" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Nivel de Actividad:</label>
+                    <select id="actividad" name="actividad" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                        <option value="1.2">Sedentario (1.2)</option>
+                        <option value="1.375">Ligero (1.375)</option>
+                        <option value="1.55">Moderado (1.55)</option>
+                        <option value="1.725">Activo (1.725)</option>
+                        <option value="1.9">Muy Activo (1.9)</option>
+                    </select>
+                </div>
+                <button type="submit" class="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline dark:bg-emerald-600 dark:hover:bg-emerald-700">Guardar Perfil</button>
+            </form>
+        </section>
+
+        <section id="dieta" class="section hidden bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mt-6">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Dieta</h2>
+            <div class="mb-4 flex flex-wrap gap-4 items-center">
+                <div>
+                    <label for="usuario-select" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Usuario:</label>
+                    <select id="usuario-select" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                        <option value="Personalizado">Personalizado</option>
+                        <option value="Jon">Jon</option>
+                        <option value="Ainhoa">Ainhoa</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="dia-select" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Día:</label>
+                    <select id="dia-select" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                        <option value="Entrenamiento">Entrenamiento</option>
+                        <option value="Lun-Mie">Lun-Mie</option>
+                        <option value="Jue">Jue</option>
+                        <option value="Sab">Sab</option>
+                        <option value="Dom">Dom</option>
+                    </select>
+                </div>
+            </div>
+
+            <form id="comida-form" class="mb-6 bg-gray-100 dark:bg-gray-700 rounded-md p-4 space-y-4">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Añadir Comida</h3>
+                <div>
+                    <label for="comida-select" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Sección de la Comida:</label>
+                    <select id="comida-select" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                        <option value="Desayuno">Desayuno</option>
+                        <option value="Pre-entreno">Pre-entreno</option>
+                        <option value="Intra-entreno">Intra-entreno</option>
+                        <option value="Post-entreno">Post-entreno</option>
+                        <option value="Comida">Comida</option>
+                        <option value="Merienda">Merienda</option>
+                        <option value="Cena">Cena</option>
+                        <option value="Pre-cama">Pre-cama</option>
+                        <option value="Otros">Otros</option>
+                        <option value="Snack">Snack</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="alimento-select" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Alimento:</label>
+                    <select id="alimento-select" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                    </select>
+                </div>
+                <div>
+                    <label for="cantidad-input" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Cantidad (g):</label>
+                    <input type="number" id="cantidad-input" name="cantidad" value="100" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                </div>
+                <button type="submit" class="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline dark:bg-emerald-600 dark:hover:bg-emerald-700">Añadir a la Dieta</button>
+            </form>
+
+            <div id="tablas-comida" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                </div>
+
+            <div id="tabla-totales" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Totales</h3>
+                <table class="min-w-full table-auto rounded-lg hidden">
+                    <thead class="bg-emerald-500 text-white dark:bg-emerald-600">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Nutriente</th>
+                            <th class="px-4 py-2 text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 dark:text-gray-300">
+                        <tr>
+                            <td class="px-4 py-2">Kcal</td>
+                            <td id="total-kcal" class="px-4 py-2 text-right">0</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2">Proteínas (g)</td>
+                            <td id="total-proteinas" class="px-4 py-2 text-right">0</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2">Hidratos (g)</td>
+                            <td id="total-hidratos" class="px-4 py-2 text-right">0</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2">Grasas (g)</td>
+                            <td id="total-grasas" class="px-4 py-2 text-right">0</td>
+                        </tr>
+                         <tr>
+                            <td class="px-4 py-2">Fibra (g)</td>
+                            <td id="total-fibra" class="px-4 py-2 text-right">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-8 bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+                <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Resumen de Dieta</h3>
+                <div id="resumen-dieta" class="text-gray-700 dark:text-gray-300">
+                    </div>
+            </div>
+
+            <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Actividad Física</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="caminata1" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Caminata 1 (km o min):</label>
+                        <input type="number" id="caminata1" name="caminata1" value="0" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="caminata2" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Caminata 2 (km o min):</label>
+                        <input type="number" id="caminata2" name="caminata2" value="0" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="gym" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Gym (min):</label>
+                        <input type="number" id="gym" name="gym" value="0" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="mt-4 text-gray-700 dark:text-gray-300">
+                    <p>Calorías quemadas (aprox.): <span id="calorias-quemadas">0</span> kcal</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="alimento" class="section hidden bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mt-6">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Añadir Alimento</h2>
+            <form id="alimento-form" class="space-y-4">
+                <div>
+                    <label for="alimento-id" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">ID (único):</label>
+                    <input type="text" id="alimento-id" name="id" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                    <div id="alimento-id-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+                </div>
+                <div>
+                    <label for="alimento-nombre" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Nombre:</label>
+                    <input type="text" id="alimento-nombre" name="nombre" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                     <div id="alimento-nombre-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+                </div>
+                <div>
+                    <label for="alimento-kcal" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Kcal (por 100g):</label>
+                    <input type="number" id="alimento-kcal" name="kcal" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="alimento-proteinas" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Proteínas (g):</label>
+                    <input type="number" id="alimento-proteinas" name="proteinas" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="alimento-hidratos" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Hidratos (g):</label>
+                    <input type="number" id="alimento-hidratos" name="hidratos" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="alimento-grasas" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Grasas (g):</label>
+                    <input type="number" id="alimento-grasas" name="grasas" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="alimento-fibra" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Fibra (g):</label>
+                    <input type="number" id="alimento-fibra" name="fibra" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                </div>
+                <button type="submit" class="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline dark:bg-emerald-600 dark:hover:bg-emerald-700">Añadir Alimento</button>
+            </form>
+        </section>
+
+        <section id="progreso" class="section hidden bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mt-6">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Progreso</h2>
+            <form id="peso-form" class="mb-6 flex items-end space-x-4">
+                <div>
+                    <label for="peso-input" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Peso (kg):</label>
+                    <input type="number" id="peso-input" name="peso" required class="shadow appearance-none border roundedw-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500">
+                </div>
+                <button type="submit" class="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline dark:bg-emerald-600 dark:hover:bg-emerald-700">Registrar</button>
+            </form>
+            <div class="chart-container">
+                <canvas id="peso-chart" width="400" height="200"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-200 dark:bg-gray-800 rounded-t-lg shadow-md mt-8 py-4">
+        <div class="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
+            Creado por [Tu Nombre]
+        </div>
+    </footer>
+
+    <script>
+        // Datos de alimentos predefinidos
+        const defaultFoods = {
+            "ch": { name: "Clara de Huevo", k: 33, p: 11, c: 0.4, f: 0, fi: 0 },
+            "hc": { name: "Huevo Completo", k: 143, p: 12.7, c: 1.1, f: 9.5, fi: 0 },
+            "ha": { name: "Harina de Avena", k: 390, p: 13, c: 68, f: 7, fi: 9 },
+            "fr": { name: "Fruta", k: 32, p: 0.7, c: 7.7, f: 0.3, fi: 2 },
+            "ag": { name: "Aguacate", k: 160, p: 2, c: 8.5, f: 14.7, fi: 6.7 },
+            "po": { name: "Pollo", k: 165, p: 31, c: 0, f: 3.5, fi: 0 },
+            "ab": { name: "Arroz Blanco", k: 130, p: 2.7, c: 28.1, f: 0.3, fi: 0.4 },
+            "ao": { name: "Aceite de Oliva", k: 900, p: 0, c: 0, f: 100, fi: 0 },
+            "br": { name: "Brócoli", k: 35, p: 2.5, c: 7.1, f: 0.4, fi: 3.3 },
+            "wh": { name: "Whey Protein", k: 370, p: 90, c: 2, f: 1, fi: 0 },
+            "sa": { name: "Salmón", k: 206, p: 22, c: 0, f: 13, fi: 0 },
+            "es": { name: "Espinacas", k: 23, p: 2.9, c: 3.6, f: 0.4, fi: 2.2 },
+            "pa": { name: "Patata", k: 77, p: 2.5, c: 17, f: 0.1, fi: 2.2 },
+            "ca": { name: "Caseína", k: 360, p: 80, c: 5, f: 2.5, fi: 0 },
+            "pi": { name: "Pistachos", k: 246, p: 9, c: 42, f: 3, fi: 6 },
+            "pi32": { name: "Pistachos (32g)", k: 246.875, p: 8.75, c: 40.625, f: 3.75, fi: 7.5 },
+            "pfs": { name: "Pasta Fibra Saludable", k: 395.833, p: 12.5, c: 60.417, f: 7.292, fi: 23.958 },
+            "al": { name: "Almendras", k: 600, p: 21, c: 21, f: 50, fi: 13 },
+            "nu": { name: "Nueces", k: 654, p: 15.2, c: 13.7, f: 65, fi: 6.7 },
+            "ea": { name: "EAA (Aminoácidos Esenciales)", k: 400, p: 90, c: 0, f: 0, fi: 0 },
+            "dx": { name: "Dextrosa", k: 400, p: 0, c: 100, f: 0, fi: 0 },
+            "cr": { name: "Creatina", k: 0, p: 0, c: 0, f: 0, fi: 0 },
+            "cf": { name: "Cafeína", k: 275, p: 0, c: 0, f: 0, fi: 0 },
+            "va": { name: "Vacuno", k: 131, p: 21, c: 0, f: 5, fi: 0 },
+            "et": { name: "Entrecot", k: 250, p: 25, c: 0, f: 16, fi: 0 },
+            "eg": { name: "Ensalada Verde", k: 43.41, p: 0.95, c: 4.73, f: 2.61, fi: 1.36 },
+            "ta": { name: "Tacos", k: 287, p: 15, c: 40, f: 6, fi: 5.4 },
+            "pc": { name: "Pechuga de Pollo", k: 79, p: 16, c: 1.8, f: 0.9, fi: 0 },
+            "qc": { name: "Queso Cottage", k: 267, p: 27, c: 0, f: 17, fi: 0 },
+            "cv": { name: "Cerveza", k: 68, p: 0, c: 2.6, f: 0, fi: 0 },
+            "cb": { name: "Cubata Ron Cola", k: 33.636, p: 0, c: 0.085, f: 0, fi: 0 },
+            "pl": { name: "Pastilla L-Carnitina", k: 0, p: 0, c: 0, f: 0, fi: 0 },
+            "pe": { name: "Pera", k: 220, p: 4, c: 50, f: 0, fi: 0 },
+            "chb": { name: "Chuletas de Cerdo", k: 240, p: 19.17, c: 0.5, f: 18.33, fi: 0 },
+        };
+
+        // Dietas predefinidas para Jon y Ainhoa
+        const defaultDiets = {
+            "Jon": {
+                "Entrenamiento": [
+                    { m: "Desayuno", f: "ch", g: 200 }, { m: "Desayuno", f: "hc", g: 60 }, { m: "Desayuno", f: "ha", g: 20 },
+                    { m: "Desayuno", f: "ag", g: 50 }, { m: "Desayuno", f: "nu", g: 15 },
+                    { m: "Pre-entreno", f: "pl", g: 1 }, { m: "Pre-entreno", f: "pe", g: 30 }, { m: "Pre-entreno", f: "ea", g: 20 },
+                    { m: "Pre-entreno", f: "dx", g: 5 },  { m: "Pre-entreno", f: "cf", g: 4 },
+                    { m: "Intra-entreno", f: "ea", g: 15 }, { m: "Intra-entreno", f: "cr", g: 5 },
+                    { m: "Post-entreno", f: "wh", g: 40 }, { m: "Post-entreno", f: "dx", g: 40 },
+                    { m: "Comida", f: "ab", g: 150 }, { m: "Comida", f: "va", g: 200 }, { m: "Comida", f: "ao", g: 10 },
+                    { m: "Merienda", f: "fr", g: 150 }, { m: "Merienda", f: "al", g: 20 },
+                    { m: "Cena", f: "sa", g: 200 }, { m: "Cena", f: "es", g: 100 }, { m: "Cena", f: "ao", g: 10 },
+                    { m: "Pre-cama", f: "ca", g: 40 }, { m: "Pre-cama", f: "nu", g: 30 },
+                ],
+                "Lun-Mie": [
+                    { m: "Desayuno", f: "ch", g: 150 }, { m: "Desayuno", f: "hc", g: 50 }, { m: "Desayuno", f: "ha", g: 25 },
+                    { m: "Desayuno", f: "fr", g: 100 }, { m: "Desayuno", f: "al", g: 20 },
+                    { m: "Comida", f: "ab", g: 100 }, { m: "Comida", f: "pc", g: 150 }, { m: "Comida", f: "br", g: 100 },
+                    { m: "Merienda", f: "pe", g: 100 }, { m: "Merienda", f: "pi", g: 32 },
+                    { m: "Cena", f: "sa", g: 150 }, { m: "Cena", f: "es", g: 80 }, { m: "Cena", f: "ao", g: 15 },
+                    { m: "Pre-cama", f: "ca", g: 30 }, { m: "Pre-cama", f: "nu", g: 20 },
+                ],
+                "Jue": [
+                    { m: "Desayuno", f: "ch", g: 200 }, { m: "Desayuno", f: "hc", g: 60 }, { m: "Desayuno", f: "ha", g: 20 },
+                    { m: "Desayuno", f: "ag", g: 50 }, { m: "Desayuno", f: "nu", g: 15 },
+                    { m: "Pre-entreno", f: "pl", g: 1 }, { m: "Pre-entreno", f: "pe", g: 30 }, { m: "Pre-entreno", f: "ea", g: 20 },
+                    { m: "Pre-entreno", f: "dx", g: 5 },  { m: "Pre-entreno", f: "cf", g: 4 },
+                    { m: "Intra-entreno", f: "ea", g: 15 }, { m: "Intra-entreno", f: "cr", g: 5 },
+                    { m: "Post-entreno", f: "wh", g: 40 }, { m: "Post-entreno", f: "dx", g: 40 },
+                    { m: "Comida", f: "ab", g: 150 }, { m: "Comida", f: "va", g: 200 }, { m: "Comida", f: "ao", g: 10 },
+                    { m: "Merienda", f: "fr", g: 150 }, { m: "Merienda", f: "al", g: 20 },
+                    { m: "Cena", f: "sa", g: 200 }, { m: "Cena", f: "es", g: 100 }, { m: "Cena", f: "ao", g: 10 },
+                    { m: "Pre-cama", f: "ca", g: 40 }, { m: "Pre-cama", f: "nu", g: 30 },
+                ],
+                "Sab": [
+                    { m: "Desayuno", f: "ch", g: 150 }, { m: "Desayuno", f: "hc", g: 50 }, { m: "Desayuno", f: "ha", g: 25 },
+                    { m: "Desayuno", f: "fr", g: 100 }, { m: "Desayuno", f: "al", g: 20 },
+                    { m: "Comida", f: "ta", g: 200 },
+                    { m: "Merienda", f: "pe", g: 100 }, { m: "Merienda", f: "pi", g: 32 },
+                    { m: "Cena", f: "et", g: 250 }, { m: "Cena", f: "eg", g: 150 }, { m: "Cena", f: "cv", g: 330 },
+                    { m: "Pre-cama", f: "qc", g: 100 }, { m: "Pre-cama", f: "nu", g: 20 },
+                ],
+                 "Dom": [
+                    { m: "Desayuno", f: "ch", g: 100 }, { m: "Desayuno", f: "hc", g: 40 }, { m: "Desayuno", f: "ha", g: 30 },
+                    { m: "Desayuno", f: "fr", g: 120 }, { m: "Desayuno", f: "al", g: 15 },
+                    { m: "Comida", f: "ab", g: 120 }, { m: "Comida", f: "pc", g: 180 }, { m: "Comida", f: "br", g: 120 },
+                    { m: "Merienda", f: "fr", g: 100 }, { m: "Merienda", f: "pi", g: 32 },
+                    { m: "Cena", f: "sa", g: 180 }, { m: "Cena", f: "es", g: 100 }, { m: "Cena", f: "ao", g: 10 },
+                    { m: "Pre-cama", f: "ca", g: 30 }, { m: "Pre-cama", f: "nu", g: 25 },
+                ],
+            },
+            "Ainhoa": {
+                "Entrenamiento": [
+                    { m: "Desayuno", f: "ch", g: 180 }, { m: "Desayuno", f: "ha", g: 20 }, { m: "Desayuno", f: "fr", g: 100 },
+                    { m: "Pre-entreno", f: "pl", g: 1 }, { m: "Pre-entreno", f: "pe", g: 40 }, { m: "Pre-entreno", f: "cf", g: 3 },
+                    { m: "Intra-entreno", f: "ea", g: 10 }, { m: "Intra-entreno", f: "cr", g: 3 },
+                    { m: "Post-entreno", f: "wh", g: 30 }, { m: "Post-entreno", f: "dx", g: 30 },
+                    { m: "Comida", f: "ab", g: 120 }, { m: "Comida", f: "po", g: 180 }, { m: "Comida", f: "ao", g: 10 },
+                    { m: "Merienda", f: "fr", g: 120 }, { m: "Merienda", f: "al", g: 25 },
+                    { m: "Cena", f: "sa", g: 250 }, { m: "Cena", f: "es", g: 120 }, { m: "Cena", f: "ao", g: 15 },
+                    { m: "Pre-cama", f: "ca", g: 30 },
+                ],
+                "Lun-Mie": [
+                    { m: "Desayuno", f: "ch", g: 120 }, { m: "Desayuno", f: "ha", g: 25 }, { m: "Desayuno", f: "fr", g: 120 },
+                    { m: "Comida", f: "ab", g: 100 }, { m: "Comida", f: "pc", g: 150 }, { m: "Comida", f: "br", g: 100 },
+                    { m: "Merienda", f: "pe", g: 120 }, { m: "Merienda", f: "pi", g: 32 },
+                    { m: "Cena", f: "sa", g: 200 }, { m: "Cena", f: "es", g: 100 }, { m: "Cena", f: "ao", g: 10 },
+                    { m: "Pre-cama", f: "ca", g: 30 },
+                ],
+                "Jue":  [
+                    { m: "Desayuno", f: "ch", g: 180 }, { m: "Desayuno", f: "ha", g: 20 }, { m: "Desayuno", f: "fr", g: 100 },
+                    { m: "Pre-entreno", f: "pl", g: 1 }, { m: "Pre-entreno", f: "pe", g: 40 }, { m: "Pre-entreno", f: "cf", g: 3 },
+                    { m: "Intra-entreno", f: "ea", g: 10 }, { m: "Intra-entreno", f: "cr", g: 3 },
+                    { m: "Post-entreno", f: "wh", g: 30 }, { m: "Post-entreno", f: "dx", g: 30 },
+                    { m: "Comida", f: "ab", g: 120 }, { m: "Comida", f: "po", g: 180 }, { m: "Comida", f: "ao", g: 10 },
+                    { m: "Merienda", f: "fr", g: 120 }, { m: "Merienda", f: "al", g: 25 },
+                    { m: "Cena", f: "sa", g: 250 }, { m: "Cena", f: "es", g: 120 }, { m: "Cena", f: "ao", g: 15 },
+                    { m: "Pre-cama", f: "ca", g: 30 },
+                ],
+                "Sab": [
+                    { m: "Desayuno", f: "ch", g: 120 }, { m: "Desayuno", f: "ha", g: 25 }, { m: "Desayuno", f: "fr", g: 120 },
+                    { m: "Comida", f: "ta", g: 180 },
+                    { m: "Merienda", f: "pe", g: 120 }, { m: "Merienda", f: "pi", g: 32 },
+                    { m: "Cena", f: "sa", g: 220 }, { m: "Cena", f: "eg", g: 150 }, { m: "Cena", f: "cb", g: 2 },
+                    { m: "Pre-cama", f: "qc", g: 100 },
+                ],
+                "Dom": [
+                    { m: "Desayuno", f: "ch", g: 100 }, { m: "Desayuno", f: "ha", g: 30 }, { m: "Desayuno", f: "fr", g: 130 },
+                    { m: "Comida", f: "ab", g: 110 }, { m: "Comida", f: "pc", g: 170 }, { m: "Comida", f: "br", g: 110 },
+                    { m: "Merienda", f: "fr", g: 120 }, { m: "Merienda", f: "al", g: 20 },
+                    { m: "Cena", f: "sa", g: 200 }, { m: "Cena", f: "es", g: 110 }, { m: "Cena", f: "ao", g: 10 },
+                    { m: "Pre-cama", f: "ca", g: 25 },
+                ],
+            },
+        };
+
+        // Función para obtener datos guardados en localStorage
+        function getStoredData(key, defaultValue) {
+            const storedData = localStorage.getItem(key);
+            return storedData ? JSON.parse(storedData) : defaultValue;
+        }
+
+        // Función para guardar datos en localStorage
+        function storeData(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        // Variables globales
+        let foods = getStoredData('foods', {});
+        let profile = getStoredData('profile', { peso: 70, altura: 170, edad: 30, genero: "Hombre", actividad: 1.55 });
+        let diets = getStoredData('diets', { "Personalizado": {} });
+        let weightLog = getStoredData('weightLog', []);
+        let currentUsuario = "Personalizado";
+        let currentDia = "Entrenamiento";
+        let isDarkMode = false; // Estado del tema
+
+        // Elementos del DOM
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeToggleIcon = document.getElementById('theme-toggle-icon');
+        const perfilForm = document.getElementById('perfil-form');
+        const usuarioSelect = document.getElementById('usuario-select');
+        const diaSelect = document.getElementById('dia-select');
+        const comidaForm = document.getElementById('comida-form');
+        const alimentoSelect = document.getElementById('alimento-select');
+        const cantidadInput = document.getElementById('cantidad-input');
+        const tablasComidaDiv = document.getElementById('tablas-comida');
+        const tablaTotales = document.querySelector('#tabla-totales table');
+        const totalKcalDisplay = document.getElementById('total-kcal');
+        const totalProteinasDisplay = document.getElementById('total-proteinas');
+        const totalHidratosDisplay = document.getElementById('total-hidratos');
+        const totalGrasasDisplay = document.getElementById('total-grasas');
+        const totalFibraDisplay = document.getElementById('total-fibra');
+        const resumenDietaDiv = document.getElementById('resumen-dieta');
+        const alimentoForm = document.getElementById('alimento-form');
+        const alimentoIdInput = document.getElementById('alimento-id');
+        const alimentoNombreInput = document.getElementById('alimento-nombre');
+        const pesoForm = document.getElementById('peso-form');
+        const pesoInput = document.getElementById('peso-input');
+        const pesoChartCtx = document.getElementById('peso-chart').getContext('2d');
+        const secciones = document.querySelectorAll('.section');
+        const navItems = document.querySelectorAll('nav li');
+        const caminata1Input = document.getElementById('caminata1');
+        const caminata2Input = document.getElementById('caminata2');
+        const gymInput = document.getElementById('gym');
+        const caloriasQuemadasDisplay = document.getElementById('calorias-quemadas');
+        const alimentoIdError = document.getElementById('alimento-id-error');
+        const alimentoNombreError = document.getElementById('alimento-nombre-error');
+
+        let pesoChart;
+
+        // Funciones auxiliares
+        /**
+         * Cambia la visibilidad de las secciones y actualiza la navegación.
+         */
+        function showSection(sectionId) {
+            secciones.forEach(section => section.classList.add('hidden'));
+            navItems.forEach(item => item.classList.remove('active'));
+
+            const section = document.getElementById(sectionId);
+            const navItem = document.querySelector(`nav li[data-section="${sectionId}"]`);
+
+            if (section) {
+                section.classList.remove('hidden');
+                section.classList.add('active');
+            }
+            if (navItem) {
+                navItem.classList.add('active');
+            }
+        }
+
+        /**
+         * Inicializa y actualiza el select de alimentos en el formulario de dieta.
+         */
+        function updateFoodSelect() {
+            alimentoSelect.innerHTML = ''; // Limpiar el select
+            const allFoods = { ...defaultFoods, ...foods }; // Combinar alimentos predefinidos y personalizados
+            for (const foodId in allFoods) {
+                const food = allFoods[foodId];
+                const option = document.createElement('option');
+                option.value = foodId;
+                option.textContent = food.name;
+                alimentoSelect.appendChild(option);
+            }
+        }
+
+        /**
+        * Calcula los nutrientes de una comida basada en la cantidad.
+        */
+        function calcularNutrientes(food, cantidad) {
+            const factor = cantidad / 100;
+            return {
+                kcal: (food.k * factor).toFixed(1),
+                proteinas: (food.p * factor).toFixed(1),
+                hidratos: (food.c * factor).toFixed(1),
+                grasas: (food.f * factor).toFixed(1),
+                fibra: (food.fi * factor).toFixed(1),
+            };
+        }
+
+        /**
+         * Agrega una comida a la dieta del usuario y día seleccionados.
+         */
+        function addFoodToDiet(event) {
+            event.preventDefault();
+
+            if (currentUsuario !== "Personalizado") {
+                alert("Solo puedes añadir comidas a la dieta del usuario Personalizado.");
+                return;
+            }
+
+            const alimentoId = alimentoSelect.value;
+            const cantidad = parseFloat(cantidadInput.value);
+
+            if (isNaN(cantidad) || cantidad <= 0) {
+                alert("Por favor, ingresa una cantidad válida mayor que cero.");
+                return;
+            }
+
+            const comida = {
+                m: comidaSelect.value,
+                f: alimentoId,
+                g: cantidad,
+            };
+
+            if (!diets[currentUsuario]) {
+                diets[currentUsuario] = {};
+            }
+            if (!diets[currentUsuario][currentDia]) {
+                diets[currentUsuario][currentDia] = [];
+            }
+
+            diets[currentUsuario][currentDia].push(comida);
+            storeData('diets', diets);
+            updateDietTables();
+            comidaForm.reset();
+        }
+
+        /**
+         * Genera las tablas de comidas para el usuario y día seleccionados.
+         */
+        function updateDietTables() {
+            tablasComidaDiv.innerHTML = ''; // Limpiar el contenedor de tablas
+            const currentDiet = diets[currentUsuario] ? diets[currentUsuario][currentDia] || [] : [];
+            const seccionesComida = ["Desayuno", "Pre-entreno", "Intra-entreno", "Post-entreno", "Comida", "Merienda", "Cena", "Pre-cama", "Otros", "Snack"];
+            let totales = { kcal: 0, proteinas: 0, hidratos: 0, grasas: 0, fibra: 0 };
+
+            seccionesComida.forEach(seccion => {
+                const comidasSeccion = currentDiet.filter(comida => comida.m === seccion);
+                if (comidasSeccion.length > 0) {
+                    const tabla = document.createElement('table');
+                    tabla.className = "min-w-full table-auto rounded-lg bg-white dark:bg-gray-800 shadow-md";
+                    tabla.innerHTML = `
+                        <thead class="bg-emerald-500 text-white dark:bg-emerald-600">
+                            <tr>
+                                <th class="px-4 py-2 text-left">Alimento</th>
+                                <th class="px-4 py-2 text-right">Cantidad (g)</th>
+                                <th class="px-4 py-2 text-right">Kcal</th>
+                                <th class="px-4 py-2 text-right">Proteínas (g)</th>
+                                <th class="px-4 py-2 text-right">Hidratos (g)</th>
+                                <th class="px-4 py-2 text-right">Grasas (g)</th>
+                                <th class="px-4 py-2 text-right">Fibra (g)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700 dark:text-gray-300">
+                        </tbody>
+                    `;
+                    const tbody = tabla.querySelector('tbody');
+                    let subtotal = { kcal: 0, proteinas: 0, hidratos: 0, grasas: 0, fibra: 0 };
+
+                    comidasSeccion.forEach(comida => {
+                        const foodData = defaultFoods[comida.f] || foods[comida.f];
+                        if (foodData) {
+                            const nutrientes = calcularNutrientes(foodData, comida.g);
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td class="px-4 py-2">${foodData.name}</td>
+                                <td class="px-4 py-2 text-right">${comida.g}</td>
+                                <td class="px-4 py-2 text-right">${nutrientes.kcal}</td>
+                                <td class="px-4 py-2 text-right">${nutrientes.proteinas}</td>
+                                <td class="px-4 py-2 text-right">${nutrientes.hidratos}</td>
+                                <td class="px-4 py-2 text-right">${nutrientes.grasas}</td>
+                                 <td class="px-4 py-2 text-right">${nutrientes.fibra}</td>
+                            `;
+                            tbody.appendChild(row);
+
+                            subtotal.kcal += parseFloat(nutrientes.kcal);
+                            subtotal.proteinas += parseFloat(nutrientes.proteinas);
+                            subtotal.hidratos += parseFloat(nutrientes.hidratos);
+                            subtotal.grasas += parseFloat(nutrientes.grasas);
+                            subtotal.fibra += parseFloat(nutrientes.fibra);
+                        }
+                    });
+
+                    // Añadir fila de subtotal
+                    const subtotalRow = document.createElement('tr');
+                    subtotalRow.innerHTML = `
+                        <td class="px-4 py-2 font-semibold text-right" colspan="2">Subtotal</td>
+                        <td class="px-4 py-2 text-right">${subtotal.kcal.toFixed(1)}</td>
+                        <td class="px-4 py-2 text-right">${subtotal.proteinas.toFixed(1)}</td>
+                        <td class="px-4 py-2 text-right">${subtotal.hidratos.toFixed(1)}</td>
+                        <td class="px-4 py-2 text-right">${subtotal.grasas.toFixed(1)}</td>
+                        <td class="px-4 py-2 text-right">${subtotal.fibra.toFixed(1)}</td>
+                    `;
+                    tbody.appendChild(subtotalRow);
+                    tablasComidaDiv.appendChild(tabla);
+
+                    totales.kcal += subtotal.kcal;
+                    totales.proteinas += subtotal.proteinas;
+                    totales.hidratos += subtotal.hidratos;
+                    totales.grasas += subtotal.grasas;
+                    totales.fibra += subtotal.fibra;
+                }
+            });
+
+            // Mostrar totales
+            totalKcalDisplay.textContent = totales.kcal.toFixed(1);
+            totalProteinasDisplay.textContent = totales.proteinas.toFixed(1);
+            totalHidratosDisplay.textContent = totales.hidratos.toFixed(1);
+            totalGrasasDisplay.textContent = totales.grasas.toFixed(1);
+            totalFibraDisplay.textContent = totales.fibra.toFixed(1);
+            tablaTotales.classList.remove('hidden');
+
+            // Generar resumen de dieta
+            let resumen = `<p><strong>Kcal:</strong> ${totales.kcal.toFixed(1)} Energía total. `;
+            if (currentUsuario === 'Personalizado') {
+                 resumen += `Déficit calórico clave para perder peso.</p>`;
+            }
+            else{
+                resumen += `Dieta predefinida para ${currentUsuario}.</p>`;
+            }
+            resumen += `<p><strong>Proteínas:</strong> ${totales.proteinas.toFixed(1)} g.  Importantes para la construcción muscular.</p>`;
+            resumen += `<p><strong>Hidratos:</strong> ${totales.hidratos.toFixed(1)} g.  Fuente de energía principal.</p>`;
+            resumen += `<p><strong>Grasas:</strong> ${totales.grasas.toFixed(1)} g.  Esenciales para funciones hormonales y absorción de vitaminas.</p>`;
+            resumen += `<p><strong>Fibra:</strong> ${totales.fibra.toFixed(1)} g.  Beneficiosa para la digestión.</p>`;
+            resumenDietaDiv.innerHTML = resumen;
+        }
+
+        /**
+         * Añade un nuevo alimento a la lista de alimentos.
+         */
+        function addFood(event) {
+            event.preventDefault();
+             alimentoIdError.style.display = 'none';
+             alimentoNombreError.style.display = 'none';
+
+            const id = alimentoIdInput.value.trim();
+            const nombre = alimentoNombreInput.value.trim();
+            const kcal = parseFloat(document.getElementById('alimento-kcal').value);
+            const proteinas = parseFloat(document.getElementById('alimento-proteinas').value);
+            const hidratos = parseFloat(document.getElementById('alimento-hidratos').value);
+            const grasas = parseFloat(document.getElementById('alimento-grasas').value);
+            const fibra = parseFloat(document.getElementById('alimento-fibra').value);
+
+            let hasErrors = false;
+
+            if (!id) {
+                alimentoIdError.textContent = 'Por favor, ingrese un ID para el alimento.';
+                alimentoIdError.style.display = 'block';
+                hasErrors = true;
+            } else if (foods[id] || defaultFoods[id]) {
+                alimentoIdError.textContent = 'El ID ya existe. Por favor, elija un ID único.';
+                alimentoIdError.style.display = 'block';
+                hasErrors = true;
+            }
+
+            if (!nombre) {
+                alimentoNombreError.textContent = 'Por favor, ingrese un nombre para el alimento.';
+                alimentoNombreError.style.display = 'block';
+                hasErrors = true;
+            }
+
+            if (hasErrors) {
+                return;
+            }
+
+            foods[id] = { name, k: kcal, p: proteinas, c: hidratos, f: grasas, fi: fibra };
+            storeData('foods', foods);
+            updateFoodSelect();
+            alimentoForm.reset();
+            alert(`Alimento "${nombre}" añadido correctamente.`);
+        }
+
+        /**
+         * Registra el peso del usuario y actualiza el gráfico.
+         */
+        function recordWeight(event) {
+            event.preventDefault();
+            const peso = parseFloat(pesoInput.value);
+            const fecha = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+
+            if (isNaN(peso) || peso <= 0) {
+                alert("Por favor, ingrese un peso válido mayor que cero.");
+                return;
+            }
+
+            weightLog.push({ fecha, peso });
+            storeData('weightLog', weightLog);
+            updateWeightChart();
+            pesoForm.reset();
+            alert(`Peso de ${peso} kg registrado para el ${fecha}.`);
+        }
+
+        /**
+         * Inicializa y actualiza el gráfico de peso.
+         */
+        function updateWeightChart() {
+            if (!pesoChart) {
+                pesoChart = new Chart(pesoChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Peso (kg)',
+                            data: [],
+                            backgroundColor: '#3b82f6', // Color de la línea
+                            borderColor: '#3b82f6',
+                            fill: false,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: true,
+                            text: 'Evolución del Peso',
+                            fontColor: isDarkMode ? '#f9fafb' : '#1f2937', // Color del título según el tema
+                        },
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                time: {
+                                    unit: 'day',
+                                     tooltipFormat: 'YYYY-MM-DD',
+                                },
+                                ticks: {
+                                    fontColor: isDarkMode ? '#f9fafb' : '#4b5563', // Color de las etiquetas del eje X
+                                },
+                                gridLines: {
+                                    color: isDarkMode ? '#4b5563' : '#d1d5db', // Color de las líneas de la cuadrícula del eje X
+                                },
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                     fontColor: isDarkMode ? '#f9fafb' : '#4b5563', // Color de las etiquetas del eje Y
+                                },
+                                gridLines: {
+                                     color: isDarkMode ? '#4b5563' : '#d1d5db', // Color de las líneas de la cuadrícula del eje Y
+                                },
+                            }]
+                        },
+                        legend: {
+                            labels: {
+                                fontColor: isDarkMode ? '#f9fafb' : '#4b5563', // Color de la leyenda
+                            },
+                        },
+                    }
+                });
+            }
+
+            pesoChart.data.labels = weightLog.map(registro => registro.fecha);
+            pesoChart.data.datasets[0].data = weightLog.map(registro => registro.peso);
+            pesoChart.update();
+        }
+
+        /**
+         * Calcula y muestra las calorías quemadas por la actividad física.
+         */
+        function calcularCaloriasQuemadas() {
+            const caminata1 = parseFloat(caminata1Input.value);
+            const caminata2 = parseFloat(caminata2Input.value);
+            const gym = parseFloat(gymInput.value);
+
+            // Estimar calorías quemadas (ejemplo: 5 kcal/min caminata, 8 kcal/min gym)
+            const caloriasCaminata1 = isNaN(caminata1) ? 0 : (caminata1 > 1 ? caminata1 * 60 * 5 : caminata1 * 5); // Si es km, convertir a minutos
+            const caloriasCaminata2 = isNaN(caminata2) ? 0 : (caminata2 > 1 ? caminata2 * 60 * 5 : caminata2 * 5);
+            const caloriasGym = isNaN(gym) ? 0 : gym * 8;
+            const totalCaloriasQuemadas = caloriasCaminata1 + caloriasCaminata2 + caloriasGym;
+
+            caloriasQuemadasDisplay.textContent = totalCaloriasQuemadas.toFixed(0);
+        }
+
+        // Inicialización y Eventos
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar datos iniciales
+            perfilForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                profile.peso = parseFloat(document.getElementById('peso').value);
+                profile.altura = parseFloat(document.getElementById('altura').value);
+                profile.edad = parseInt(document.getElementById('edad').value);
+                profile.genero = document.getElementById('genero').value;
+                profile.actividad = parseFloat(document.getElementById('actividad').value);
+                storeData('profile', profile);
+                alert('Perfil guardado correctamente.');
+            });
+
+            pesoForm.addEventListener('submit', recordWeight);
+            alimentoForm.addEventListener('submit', addFood);
+
+            // Cargar perfil
+            document.getElementById('peso').value = profile.peso;
+            document.getElementById('altura').value = profile.altura;
+            document.getElementById('edad').value = profile.edad;
+            document.getElementById('genero').value = profile.genero;
+            document.getElementById('actividad').value = profile.actividad;
+
+            // Inicializar selects
+            updateFoodSelect();
+            usuarioSelect.value = currentUsuario;
+            diaSelect.value = currentDia;
+
+            // Mostrar la sección de perfil por defecto
+            showSection('perfil');
+
+            // Eventos de navegación
+            navItems.forEach(item => {
+                item.addEventListener('click', (event) => {
+                    const sectionId = event.target.dataset.section;
+                    showSection(sectionId);
+                });
+            });
+
+            // Eventos de cambio de usuario y día
+            usuarioSelect.addEventListener('change', (event) => {
+                currentUsuario = event.target.value;
+                updateFoodSelect(); // Actualizar alimentos disponibles según el usuario
+                updateDietTables();
+            });
+
+            diaSelect.addEventListener('change', (event) => {
+                currentDia = event.target.value;
+                updateDietTables();
+            });
+
+            // Eventos de cálculo de calorías quemadas
+            caminata1Input.addEventListener('input', calcularCaloriasQuemadas);
+            caminata2Input.addEventListener('input', calcularCaloriasQuemadas);
+            gymInput.addEventListener('input', calcularCaloriasQuemadas);
+
+            // Inicializar gráfico de peso
+            updateWeightChart();
+            updateDietTables();
+
+            // Evento para el botón de cambio de tema
+            themeToggle.addEventListener('click', () => {
+                isDarkMode = !isDarkMode;
+                document.body.classList.toggle('dark-mode', isDarkMode);
+                themeToggleIcon.textContent = isDarkMode ? '☀️' : '🌙';
+                updateWeightChart(); // Actualizar el gráfico para que se vea bien con el tema
+            });
+            // Establecer el tema inicial al cargar la página
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                themeToggleIcon.textContent = '☀️';
+            } else {
+                themeToggleIcon.textContent = '🌙';
+            }
+        });
+    </script>
+</body>
+</html>
